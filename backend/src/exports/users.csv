@@ -1,0 +1,7 @@
+_id,firstName,lastName,emailId,passwordEncrypted,passwordIV,status,createdAt,updatedAt,__v
+684ffaf3a418b80d28021bdd,shiftry,s,shiftry@gmail.com,,,active,2025-06-16T11:07:31.542Z,2025-06-16T11:07:31.542Z,0
+685193df5386a594097de3e1,manocore,m,manocore@gmail.com,,,active,2025-06-17T16:12:15.901Z,2025-06-17T16:12:44.831Z,0
+68522670aacc41ceb42b80c5,srikar,b,srikar@gmail.com,,,invited,2025-06-18T02:37:36.285Z,2025-06-18T02:37:36.285Z,0
+68525c270a422fbdd20c55a6,gladson,m,gladson@gmail.com,,,active,2025-06-18T06:26:47.960Z,2025-06-18T06:26:47.960Z,0
+685266452b08ed4dd89b4e25,Jane,Doe,jane.doe@example.com,,,active,2025-06-18T07:09:57.234Z,2025-06-18T07:09:57.234Z,0
+685266df2b08ed4dd89b4e29,admin,a,admin@example.com,,,active,2025-06-18T07:12:31.291Z,2025-06-18T07:12:31.291Z,0
