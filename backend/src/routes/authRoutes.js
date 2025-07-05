@@ -20,7 +20,7 @@ const SALT_ROUNDS = 10;
 
 // Define BASE_FRONTEND_URL and LOGO_URL from environment variables
 // Ensure these are defined AFTER dotenv.config() has run in your application's entry file.
-const BASE_FRONTEND_URL = process.env.CLIENT_BASE_URL || 'http://localhost:3000'; // Default for local dev
+const BASE_FRONTEND_URL = process.env.CLIENT_BASE_URL; // Default for local dev
 const LOGO_URL = process.env.LOGO_URL || `${BASE_FRONTEND_URL}/shiftrylogo.png`; // Assuming shiftrylogo.png is directly in frontend public
 
 // Extract company and app names from environment variables for email customization
