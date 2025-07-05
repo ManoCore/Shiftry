@@ -254,7 +254,8 @@ export default function PeoplePage() {
             />
 
             {/* Full-screen PeoplePersonalPage Modal */}
-            {isPersonalPageModalOpen && selectedUserId && ( // Use selectedUserId here
+
+            {isPersonalPageModalOpen && selectedUserId && user && user.role === 'admin'&& ( // Use selectedUserId here
                 <div className="fixed inset-0 bg-gray-900 bg-opacity-75 flex justify-center items-center z-50 p-0 sm:p-4">
                     <div className="relative bg-white rounded-lg shadow-xl w-full h-full sm:max-w-4xl sm:max-h-[90vh] overflow-hidden flex flex-col">
                         {/* Modal Header */}
