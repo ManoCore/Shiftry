@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { fetchAllUsers, deleteUser  } from "../api"; // Assuming fetchAllUsers is defined here
+import { fetchAllUsers,deleteUser } from "../api"; // Assuming fetchAllUsers is defined here
 import AddUserModal from "./AddUserModal";
 import PeoplePersonalPage from "./PeoplePersonalPage"; // Import the PeoplePersonalPage component
 import { useAuth } from '../context/AuthContext';
@@ -14,9 +14,8 @@ export default function PeoplePage() {
     const [searchQuery, setSearchQuery] = useState("");
     const [selectedUserId, setSelectedUserId] = useState(null); // Changed to store only the ID
     const [isPersonalPageModalOpen, setIsPersonalPageModalOpen] = useState(false); // New state for the personal page modal visibility
-    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false); 
     const [successMessage, setSuccessMessage] = useState("");
-    
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
     // Dummy data for Training and Leave Balance as they are not in the current user object
     const getTrainingStatus = (email) => {
@@ -72,7 +71,6 @@ export default function PeoplePage() {
         setSelectedUserId(user._id); // Store only the ID of the clicked user
         setIsPersonalPageModalOpen(true);
     };
-
     const handleDeleteUser = () => {
     if (!selectedUserId) return;
     setIsDeleteModalOpen(true);
@@ -107,12 +105,11 @@ const confirmDeleteUser = async () => {
 
     const isAdmin = user && user.role === 'admin';
 
+    // Filtered users based on search query
     const filteredUsers = users.filter(user =>
-        user.accessLevel !== 'admin' &&(
         (user.name && user.name.toLowerCase().includes(searchQuery.toLowerCase())) ||
         (user.email && user.email.toLowerCase().includes(searchQuery.toLowerCase())) ||
         (user.accessLevel && user.accessLevel.toLowerCase().includes(searchQuery.toLowerCase()))
-        )
     );
 
     return (
@@ -290,7 +287,8 @@ const confirmDeleteUser = async () => {
             />
 
             {/* Full-screen PeoplePersonalPage Modal */}
-            {isPersonalPageModalOpen && selectedUserId && user && user.role === 'admin' (
+
+            {isPersonalPageModalOpen && selectedUserId && user && user.role === 'admin'&& (
     <div className="fixed inset-0 bg-gray-900 bg-opacity-75 flex justify-center items-center z-50 p-0 sm:p-4">
         <div className="relative bg-white rounded-lg shadow-xl w-full h-full sm:max-w-4xl sm:max-h-[90vh] overflow-hidden flex flex-col">
             <div className="flex justify-between items-center bg-blue-600 text-white p-4 shrink-0">
