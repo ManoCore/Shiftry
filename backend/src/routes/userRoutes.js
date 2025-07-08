@@ -331,5 +331,28 @@ router.get("/invite/:token", asyncHandler(async (req, res) => {
         status: user.status,
     });
 }));
+
+router.delete('/:id', protect, asyncHandler(async (req, res, next) => {
+    const userId = req.params.id;
+
+    // Ensure req.user exists
+    if (!req.user) {
+        return next(new ErrorResponse('Authentication required.', 401));
+    }
+
+    // Find user by ID
+    const user = await User.findById(userId);
+    if (!user) {
+        return next(new ErrorResponse('User not found.', 404));
+    }
+
+    // Prevent an admin from deleting themselves
+    if (req.user.id.toString() === userId) {
+        return next(new ErrorResponse('You cannot delete your own user account.', 400));
+    }
+
+    await User.findByIdAndDelete(userId);
+    res.status(200).json({ success: true, message: 'User deleted successfully.' });
+}));
  
 module.exports = router;

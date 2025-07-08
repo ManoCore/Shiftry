@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { fetchAllUsers } from "../api"; // Assuming fetchAllUsers is defined here
+import { fetchAllUsers, deleteUser  } from "../api"; // Assuming fetchAllUsers is defined here
 import AddUserModal from "./AddUserModal";
 import PeoplePersonalPage from "./PeoplePersonalPage"; // Import the PeoplePersonalPage component
 import { useAuth } from '../context/AuthContext';
@@ -14,6 +14,8 @@ export default function PeoplePage() {
     const [searchQuery, setSearchQuery] = useState("");
     const [selectedUserId, setSelectedUserId] = useState(null); // Changed to store only the ID
     const [isPersonalPageModalOpen, setIsPersonalPageModalOpen] = useState(false); // New state for the personal page modal visibility
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false); 
+    const [successMessage, setSuccessMessage] = useState("");
 
     // Dummy data for Training and Leave Balance as they are not in the current user object
     const getTrainingStatus = (email) => {
@@ -70,13 +72,47 @@ export default function PeoplePage() {
         setIsPersonalPageModalOpen(true);
     };
 
+    const handleDeleteUser = () => {
+    if (!selectedUserId) return;
+    setIsDeleteModalOpen(true);
+};
+
+const confirmDeleteUser = async () => {
+    setLoading(true);
+    setError(null);
+
+    try {
+        await deleteUser(selectedUserId);
+        setUsers((prev) => prev.filter((user) => user._id !== selectedUserId));
+        setSuccessMessage("User deleted successfully!");
+        setIsDeleteModalOpen(false);
+        setIsPersonalPageModalOpen(false);
+        setSelectedUserId(null);
+    } catch (err) {
+        console.error("Failed to delete user:", {
+            message: err.message,
+            status: err.response?.status,
+            data: err.response?.data,
+        });
+        setError(err.response?.data?.message || "Failed to delete user. Please try again.");
+    } finally {
+        setLoading(false);
+        setTimeout(() => {
+            setError(null);
+            setSuccessMessage("");
+        }, 5000);
+    }
+};
+
     const isAdmin = user && user.role === 'admin';
 
     // Filtered users based on search query
     const filteredUsers = users.filter(user =>
+        user.accessLevel !== 'admin' &&(
         (user.name && user.name.toLowerCase().includes(searchQuery.toLowerCase())) ||
         (user.email && user.email.toLowerCase().includes(searchQuery.toLowerCase())) ||
         (user.accessLevel && user.accessLevel.toLowerCase().includes(searchQuery.toLowerCase()))
+        )
     );
 
     return (
@@ -254,45 +290,93 @@ export default function PeoplePage() {
             />
 
             {/* Full-screen PeoplePersonalPage Modal */}
-
-            {isPersonalPageModalOpen && selectedUserId && user && user.role === 'admin'&& ( // Use selectedUserId here
-                <div className="fixed inset-0 bg-gray-900 bg-opacity-75 flex justify-center items-center z-50 p-0 sm:p-4">
-                    <div className="relative bg-white rounded-lg shadow-xl w-full h-full sm:max-w-4xl sm:max-h-[90vh] overflow-hidden flex flex-col">
-                        {/* Modal Header */}
-                        <div className="flex justify-between items-center bg-blue-600 text-white p-4 shrink-0">
-                            <h2 className="text-xl font-semibold">Personal Details</h2> {/* Name will be loaded inside PeoplePersonalPage */}
-                            <button
-                                onClick={() => {
-                                    setIsPersonalPageModalOpen(false);
-                                    setSelectedUserId(null); // Clear selected ID on close
-                                }}
-                                className="text-white hover:text-gray-200 focus:outline-none"
-                                aria-label="Close"
-                            >
-                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
-                                </svg>
-                            </button>
-                        </div>
-                        {/* Modal Body - Renders PeoplePersonalPage */}
-                        <div className="flex-1 overflow-y-auto">
-                            <PeoplePersonalPage targetUserId={selectedUserId} /> {/* Pass selectedUserId as prop */}
-                        </div>
-                        {/* Modal Footer with Cancel Button */}
-                        <div className="p-4 bg-gray-50 border-t border-gray-200 flex justify-end shrink-0">
-                            <button
-                                onClick={() => {
-                                    setIsPersonalPageModalOpen(false);
-                                    setSelectedUserId(null); // Clear selected ID on close
-                                }}
-                                className="bg-gray-300 text-gray-800 px-4 py-2 rounded-md hover:bg-gray-400 transition-colors text-sm font-medium"
-                            >
-                                Cancel
-                            </button>
-                        </div>
-                    </div>
+            {isPersonalPageModalOpen && selectedUserId && (
+    <div className="fixed inset-0 bg-gray-900 bg-opacity-75 flex justify-center items-center z-50 p-0 sm:p-4">
+        <div className="relative bg-white rounded-lg shadow-xl w-full h-full sm:max-w-4xl sm:max-h-[90vh] overflow-hidden flex flex-col">
+            <div className="flex justify-between items-center bg-blue-600 text-white p-4 shrink-0">
+                <h2 className="text-xl font-semibold">Personal Details</h2>
+                <button
+                    onClick={() => {
+                        setIsPersonalPageModalOpen(false);
+                        setSelectedUserId(null);
+                    }}
+                    className="text-white hover:text-gray-200 focus:outline-none"
+                    aria-label="Close"
+                >
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            <div className="flex-1 overflow-y-auto">
+                <PeoplePersonalPage targetUserId={selectedUserId} />
+            </div>
+            <div className="p-4 bg-gray-50 border-t border-gray-200 flex justify-end space-x-2 shrink-0">
+                {isAdmin && (
+                    <button
+                        onClick={handleDeleteUser}
+                        className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition-colors text-sm font-medium"
+                        disabled={loading}
+                    >
+                        Delete
+                    </button>
+                )}
+                <button
+                    onClick={() => {
+                        setIsPersonalPageModalOpen(false);
+                        setSelectedUserId(null);
+                    }}
+                    className="bg-gray-300 text-gray-800 px-4 py-2 rounded-md hover:bg-gray-400 transition-colors text-sm font-medium"
+                >
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+)}
+{isDeleteModalOpen && (
+    <div className="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center z-50 p-4">
+        <div className="bg-white rounded-xl shadow-2xl w-full max-w-sm md:max-w-md p-6 md:p-8 transform transition-all duration-300 ease-out scale-95 opacity-0 animate-scale-in">
+            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4 md:mb-6 text-center">
+                Confirm Deletion
+            </h2>
+            <p className="text-sm text-gray-700 mb-6 text-center">
+                Are you sure you want to delete the user "{users.find(u => u._id === selectedUserId)?.name}"? This action cannot be undone.
+            </p>
+            {error && (
+                <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4 text-sm" role="alert">
+                    <strong className="font-bold">Error: </strong>
+                    <span className="block sm:inline">{error}</span>
                 </div>
             )}
+            <div className="flex justify-end space-x-2">
+                <button
+                    onClick={() => {
+                        setIsDeleteModalOpen(false);
+                    }}
+                    className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 transition duration-200 text-base font-medium"
+                    disabled={loading}
+                >
+                    Cancel
+                </button>
+                <button
+                    onClick={confirmDeleteUser}
+                    className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition duration-200 text-base font-medium flex items-center justify-center"
+                    disabled={loading}
+                >
+                    {loading ? (
+                        <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                    ) : (
+                        'Delete'
+                    )}
+                </button>
+            </div>
+        </div>
+    </div>
+)}
         </div>
     );
 }

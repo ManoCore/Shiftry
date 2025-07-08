@@ -1674,9 +1674,9 @@ const SchedulePage = () => {
                                 />
                               ))}
                             </div>
-                            {day.dateStr >= new Date().toISOString().split('T')[0] && isAdmin && (
+                            {isAdmin && (
                               <button
-                                onClick={() => handleAddSchedule(day.dateStr, area.name)}
+                                onClick={() => handleAddSchedule(area.name)}
                                 className="mt-2 w-full h-7 sm:h-8 rounded-md border border-dashed border-gray-300 text-gray-400 hover:bg-gray-100 transition-colors duration-200 flex items-center justify-center text-xs sm:text-sm min-h-[44px]"
                               >
                                 + Add

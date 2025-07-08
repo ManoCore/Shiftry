@@ -169,7 +169,13 @@ router.delete('/:id', auth, async (req, res) => {
       return res.status(403).json({ msg: 'Not authorized' });
     }
 
-    const location = await Location.findById(req.params.id);
+    // Validate ObjectId format to prevent Mongoose casting errors
+    if (!req.params.id.match(/^[0-9a-fA-F]{24}$/)) {
+      return res.status(400).json({ msg: 'Invalid location ID' });
+    }
+
+    // Find and delete the location in one step
+    const location = await Location.findByIdAndDelete(req.params.id);
     if (!location) {
       return res.status(404).json({ msg: 'Location not found' });
     }
@@ -179,15 +185,13 @@ router.delete('/:id', auth, async (req, res) => {
       return res.status(400).json({ msg: 'Cannot delete the default Time Off location' });
     }
 
-    await location.remove();
     res.json({ msg: 'Location removed' });
   } catch (err) {
-    console.error(err.message);
-    res.status(500).send('Server Error');
+    console.error('Error deleting location:', err.message);
+    res.status(500).json({ msg: 'Server error', error: err.message });
   }
 });
 
-// Maintain your existing routes for backward compatibility
 
 
 module.exports = router;
