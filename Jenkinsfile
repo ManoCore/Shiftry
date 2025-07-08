@@ -54,8 +54,12 @@ pipeline {
         stage('PM2 Restart') {
             steps {
                 sh '''
+                    export NVM_DIR="/root/.nvm"
+                    [ -s "$NVM_DIR/nvm.sh" ] && \\. "$NVM_DIR/nvm.sh"
+                    nvm use 22
+        
                     cd /var/www/Shiftry-Prod
-                    /root/.nvm/versions/node/v22.17.0/bin/pm2 restart all
+                    pm2 restart all
                 '''
             }
         }
