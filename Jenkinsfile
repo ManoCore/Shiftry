@@ -23,7 +23,7 @@ pipeline {
             steps {
                 sh '''
                     cd /var/www/Shiftry-Prod
-                    pm2 restart all
+                    sudo pm2 restart all
                 '''
             }
         }
