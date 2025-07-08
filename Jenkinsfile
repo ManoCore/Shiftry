@@ -62,7 +62,7 @@ pipeline {
                     done
  
                     echo "Setting ownership to www-data..."
-                    chown -R www-data:www-data /var/www/Shiftry-Prod
+                    sudo chown -R www-data:www-data /var/www/Shiftry-Prod
                 '''
             }
         }
