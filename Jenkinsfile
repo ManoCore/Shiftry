@@ -28,7 +28,6 @@ pipeline {
                         fi
                     done
 
-                    echo "Skipped sudo chown (not permitted in Jenkins). Make sure Jenkins has ownership of /var/www/Shiftry-Prod"
                 '''
             }
         }
