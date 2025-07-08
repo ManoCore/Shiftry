@@ -21,8 +21,7 @@ const leaveRoutes=require("../src/routes/leaveRoutes");
 const app = express();
  
 // ✅ These must come BEFORE any routes
-app.use(cors(corsOptions));
-// app.options('*', cors(corsOptions));
+app.use(cors);
 app.use(express.json()); // ✅ Moved to the top!
 app.use(cookieParser());
 app.use(errorHandler);
