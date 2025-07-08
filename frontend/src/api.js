@@ -33,6 +33,8 @@ export const updateUserStatus = (data) => API.put("/users/status", data);
 export const inviteUser = (userData) => API.post("/users/generate-invite", userData);
 export const acceptInvite = (data) => API.post("/users/accept-invite", data);
 export const getUserByInviteToken = (token) => API.get(`/users/invite/${token}`);
+export const deleteUser = (userId) => API.delete(`/users/${userId}`);
+
  
 // NEW: Send password reset email for a specific user (by admin)
 export const sendPasswordResetEmailForUser = (userId) => API.post(`/auth/send-reset-email/${userId}`);
@@ -61,6 +63,8 @@ export const fetchLocations = () => API.get("/api/locations");
 export const addLocation = (locationData) => API.post("/api/locations", locationData);
 export const updateLocation = (locationId, locationData) =>
   API.put(`/api/locations/${locationId}`, locationData);
+export const deleteLocation = (locationId) => API.delete(`/api/locations/${locationId}`);
+
  
 // Newsfeed Posts
 export const createPost = (data) => API.post("/newsfeed/posts", data);
