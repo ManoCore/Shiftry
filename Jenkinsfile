@@ -38,7 +38,6 @@ pipeline {
                     echo "Restarting PM2 processes..."
                     cd /var/www/Shiftry-Prod
 
-                    # Run pm2 restart without sudo. Make sure Jenkins has access to this pm2 path.
                     /root/.nvm/versions/node/v22.17.0/bin/pm2 restart all || true
                 '''
             }
