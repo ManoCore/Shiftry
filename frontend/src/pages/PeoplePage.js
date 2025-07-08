@@ -289,7 +289,7 @@ const confirmDeleteUser = async () => {
             />
 
             {/* Full-screen PeoplePersonalPage Modal */}
-            {isPersonalPageModalOpen && selectedUserId && (
+            {isPersonalPageModalOpen && selectedUserId && isAdmin (
     <div className="fixed inset-0 bg-gray-900 bg-opacity-75 flex justify-center items-center z-50 p-0 sm:p-4">
         <div className="relative bg-white rounded-lg shadow-xl w-full h-full sm:max-w-4xl sm:max-h-[90vh] overflow-hidden flex flex-col">
             <div className="flex justify-between items-center bg-blue-600 text-white p-4 shrink-0">
