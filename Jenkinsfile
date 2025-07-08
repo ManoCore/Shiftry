@@ -14,8 +14,10 @@ pipeline {
 
         stage('Sync to Web Folder') {
             steps {
-                sh 'rm -rf /var/www/Shiftry-Prod/*'
-                sh 'cp -r . /var/www/Shiftry-Prod/'
+                sh '''
+                    rm -rf /var/www/Shiftry-Prod/*
+                    cp -r . /var/www/Shiftry-Prod/
+                '''
             }
         }
 
@@ -23,7 +25,7 @@ pipeline {
             steps {
                 sh '''
                     cd /var/www/Shiftry-Prod
-                    sudo pm2 restart all
+                    sudo /root/.nvm/versions/node/v22.17.0/bin/pm2 restart all
                 '''
             }
         }
