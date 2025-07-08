@@ -43,11 +43,19 @@ pipeline {
             }
         }
  
+        // stage('PM2 Restart') {
+        //     steps {
+        //         sh '''
+        //             cd /var/www/Shiftry-Prod
+        //             pm2 restart all
+        //         '''
+        //     }
+        // }
         stage('PM2 Restart') {
             steps {
                 sh '''
                     cd /var/www/Shiftry-Prod
-                    pm2 restart all
+                    /root/.nvm/versions/node/v22.17.0/bin/pm2 restart all
                 '''
             }
         }
