@@ -16,6 +16,7 @@ export default function PeoplePage() {
     const [isPersonalPageModalOpen, setIsPersonalPageModalOpen] = useState(false); // New state for the personal page modal visibility
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false); 
     const [successMessage, setSuccessMessage] = useState("");
+    
 
     // Dummy data for Training and Leave Balance as they are not in the current user object
     const getTrainingStatus = (email) => {
@@ -289,7 +290,7 @@ const confirmDeleteUser = async () => {
             />
 
             {/* Full-screen PeoplePersonalPage Modal */}
-            {isPersonalPageModalOpen && selectedUserId && isAdmin (
+            {isPersonalPageModalOpen && selectedUserId && user && user.role === 'admin' (
     <div className="fixed inset-0 bg-gray-900 bg-opacity-75 flex justify-center items-center z-50 p-0 sm:p-4">
         <div className="relative bg-white rounded-lg shadow-xl w-full h-full sm:max-w-4xl sm:max-h-[90vh] overflow-hidden flex flex-col">
             <div className="flex justify-between items-center bg-blue-600 text-white p-4 shrink-0">

@@ -51,8 +51,15 @@ pipeline {
                     echo "Cleaning existing deployment..."
                     rm -rf /var/www/Shiftry-Prod/*
  
-                    echo "Syncing project files (excluding .git)..."
-                    rsync -av --exclude='.git' --exclude='node_modules' --no-perms --omit-dir-times ./ /var/www/Shiftry-Prod/
+                    echo "Creating target directory..."
+                    mkdir -p /var/www/Shiftry-Prod
+ 
+                    echo "Copying project files (excluding .git and node_modules)..."
+                    for item in * .*; do
+                        if [ "$item" != "." ] && [ "$item" != ".." ] && [ "$item" != ".git" ] && [ "$item" != "node_modules" ]; then
+                            cp -r "$item" /var/www/Shiftry-Prod/
+                        fi
+                    done
  
                     echo "Setting ownership to www-data..."
                     chown -R www-data:www-data /var/www/Shiftry-Prod
