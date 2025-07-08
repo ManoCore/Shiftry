@@ -38,7 +38,7 @@ pipeline {
                     echo "Restarting PM2 processes..."
                     cd /var/www/Shiftry-Prod
 
-                    /root/.nvm/versions/node/v22.17.0/bin/pm2 restart all || true
+                    sudo /root/.nvm/versions/node/v22.17.0/bin/pm2 restart all || true
                 '''
             }
         }
