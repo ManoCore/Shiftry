@@ -16,7 +16,7 @@ pipeline {
             steps {
                 sh '''
                     rm -rf /var/www/Shiftry-Prod/*
-                    cp -r . /var/www/Shiftry-Prod/
+                    rsync -av --exclude='.git' ./ /var/www/Shiftry-Prod/
                 '''
             }
         }
