@@ -99,7 +99,6 @@ const AssignmentModal = ({ isOpen, onClose, assignment, dayDate, availableLocati
   const handleSubmit = (e) => {
   e.preventDefault();
  
-  console.log('formData before submission:', formData); // Now this should show a number for breakDuration
  
   // --- Validations (your existing code) ---
   if (!formData.start || !formData.end) {
@@ -149,7 +148,6 @@ const AssignmentModal = ({ isOpen, onClose, assignment, dayDate, availableLocati
   }));
  
   // --- Crucial Debugging Log ---
-  console.log('Final payload (newSchedules) being sent:', newSchedules);
  
   onSave(newSchedules);
   onClose();
@@ -402,7 +400,7 @@ const NewAreaModal = ({ isOpen, onClose, availableCareWorkers, setLocations }) =
       onClose();
     } catch (err) {
       console.error('Error saving location:', err);
-      setError(err.response?.data?.msg || 'Failed to save location');
+      setError(err.response?.data?.data?.msg || 'Failed to save location');
     }
   };
 
@@ -616,7 +614,6 @@ const SchedulePage = () => {
 
   const fetchInitialData = useCallback(async () => {
     if (!user || !user.id) {
-      console.log('No user or user.id found', { user });
       setError('Please log in to view schedules');
       setIsLoading(false);
       return;
@@ -626,15 +623,16 @@ const SchedulePage = () => {
       // Fetch care workers and locations only if not already fetched
       if (!initialFetchDone.current) {
         const usersResponse = await fetchAllUsers();
-        const fetchedCareWorkers = usersResponse.data.map(user => ({
+        console.log("usersResponse object:", usersResponse);
+console.log("usersResponse.data type:", typeof usersResponse.data);
+console.log("usersResponse.data value:", usersResponse.data);
+        const fetchedCareWorkers = (usersResponse.data || []).map(user => ({
           _id: user._id,
           name: user.name || `${user.firstName} ${user.lastName}`,
         }));
-        console.log('Fetched care workers:', fetchedCareWorkers);
         setCareWorkers(fetchedCareWorkers);
 
         const locationsResponse = await fetchLocations();
-        console.log('Fetched locations:', locationsResponse.data);
         setLocations(locationsResponse.data || []);
       }
 
@@ -643,13 +641,11 @@ const SchedulePage = () => {
       const end = new Date(weekStartDate);
       end.setDate(weekStartDate.getDate() + 6);
       const schedulesResponse = await fetchSchedulesInRange(start, end);
-      console.log('Raw schedules response:', schedulesResponse.data);
 
       const transformedSchedules = [];
-      schedulesResponse.data.forEach(schedule => {
+      (schedulesResponse.data || []).forEach(schedule => {
         const scheduleLocation = schedule.location?.name || (typeof schedule.location === 'string' ? schedule.location : 'Time Off');
         if (!schedule.careWorker) {
-          console.log(`Schedule ${schedule._id} has no careWorker`);
           if (user.role === 'admin') {
             transformedSchedules.push({
               id: schedule._id,
@@ -674,7 +670,6 @@ const SchedulePage = () => {
 
         careWorkerIds.forEach(careWorkerId => {
           if (user.role !== 'admin' && careWorkerId !== user.id) {
-            console.log(`Schedule ${schedule._id} skipped for non-admin: careWorkerId ${careWorkerId} does not match user.id ${user.id}`);
             return;
           }
           transformedSchedules.push({
@@ -693,7 +688,6 @@ const SchedulePage = () => {
         });
       });
 
-      console.log('Transformed schedules:', transformedSchedules);
       setSchedules(transformedSchedules);
       setDataFetched(true);
       initialFetchDone.current = true; // Mark initial fetch as done
@@ -716,13 +710,11 @@ const SchedulePage = () => {
       const end = new Date(startDate);
       end.setDate(startDate.getDate() + 6);
       const schedulesResponse = await fetchSchedulesInRange(start, end);
-      console.log('Raw schedules response:', schedulesResponse.data);
 
       const transformedSchedules = [];
-      schedulesResponse.data.forEach(schedule => {
+      (schedulesResponse.data || []).forEach(schedule => {
         const scheduleLocation = schedule.location?.name || (typeof schedule.location === 'string' ? schedule.location : 'Time Off');
         if (!schedule.careWorker) {
-          console.log(`Schedule ${schedule._id} has no careWorker`);
           if (user.role === 'admin') {
             transformedSchedules.push({
               id: schedule._id,
@@ -747,7 +739,6 @@ const SchedulePage = () => {
 
         careWorkerIds.forEach(careWorkerId => {
           if (user.role !== 'admin' && careWorkerId !== user.id) {
-            console.log(`Schedule ${schedule._id} skipped for non-admin: careWorkerId ${careWorkerId} does not match user.id ${user.id}`);
             return;
           }
           transformedSchedules.push({
@@ -766,7 +757,6 @@ const SchedulePage = () => {
         });
       });
 
-      console.log('Transformed schedules:', transformedSchedules);
       setSchedules(transformedSchedules);
       setError(null);
     } catch (err) {
@@ -790,7 +780,6 @@ const SchedulePage = () => {
   // Update selected locations after initial data fetch
   useEffect(() => {
     if (dataFetched && !isLoading) {
-      console.log('Post-fetch state update - Schedules:', schedules, 'Locations:', locations);
       if (user.role !== 'admin') {
         const userLocations = [...new Set(
           schedules
@@ -798,23 +787,19 @@ const SchedulePage = () => {
             .map(s => {
               const loc = locations.find(loc => loc.name === s.location);
               if (!loc) {
-                console.log(`No matching location found for schedule location: ${s.location}`);
                 return null;
               }
               return loc._id;
             })
             .filter(Boolean)
         )];
-        console.log('Auto-selected locations for non-admin:', userLocations);
         const newSelectedLocations = userLocations.length > 0 ? userLocations : ['time-off'];
         setSelectedLocations(newSelectedLocations);
         setOpenLocationDropdowns(new Set([userLocations[0] || 'time-off']));
-        console.log('Set selectedLocations:', newSelectedLocations, 'openLocationDropdowns:', [...new Set([userLocations[0] || 'time-off'])]);
       } else {
         const defaultLocations = locations.length > 0 ? [locations[0]._id] : ['time-off'];
         setSelectedLocations(defaultLocations);
         setOpenLocationDropdowns(new Set([locations[0]?._id || 'time-off']));
-        console.log('Set admin selectedLocations:', defaultLocations, 'openLocationDropdowns:', [locations[0]?._id || 'time-off']);
       }
     }
   }, [dataFetched, isLoading, schedules, locations, user]);
@@ -856,7 +841,6 @@ const SchedulePage = () => {
     const newStartDate = new Date(weekStartDate);
     newStartDate.setDate(weekStartDate.getDate() - 7);
     setWeekStartDate(newStartDate);
-    console.log('Navigated to previous week:', newStartDate);
     fetchSchedulesForWeek(newStartDate);
   }, [weekStartDate, fetchSchedulesForWeek]);
 
@@ -865,7 +849,6 @@ const SchedulePage = () => {
     const newStartDate = new Date(weekStartDate);
     newStartDate.setDate(weekStartDate.getDate() + 7);
     setWeekStartDate(newStartDate);
-    console.log('Navigated to next week:', newStartDate);
     fetchSchedulesForWeek(newStartDate);
   }, [weekStartDate, fetchSchedulesForWeek]);
 
@@ -1088,7 +1071,6 @@ const SchedulePage = () => {
           const newIds = newSchedules.map(s => s.id);
           const filteredPrev = prev.filter(s => !newIds.includes(s.id));
           const updated = [...filteredPrev, ...newSchedules];
-          console.log('Updated pendingSchedules:', updated);
           return updated;
         });
         const locationName = newSchedules[0].location;
@@ -1125,7 +1107,6 @@ const SchedulePage = () => {
 
       if (isPendingLocally) {
         setPendingSchedules(prev => prev.filter(s => s.id !== idForLocalDeletion));
-        console.log('Deleted pending schedule locally (UUID):', idForLocalDeletion);
       } else {
         if (!idForBackendDeletion) {
           setError("Error: Cannot delete. Schedule is missing a valid database ID (_id or originalScheduleId).");
@@ -1133,14 +1114,12 @@ const SchedulePage = () => {
           return;
         }
 
-        console.log('Attempting to delete schedule from backend with ID:', idForBackendDeletion);
         await deleteSchedule(idForBackendDeletion);
         setSchedules(prev => prev.filter(s => 
           s.id !== idForLocalDeletion && 
           s.originalScheduleId !== idForBackendDeletion && 
           s._id !== idForBackendDeletion
         ));
-        console.log('Successfully deleted schedule from backend and updated local state.');
       }
 
       setError(null);
@@ -1184,76 +1163,6 @@ const SchedulePage = () => {
     const event = new CustomEvent(NOTIFICATION_EVENT);
     window.dispatchEvent(event);
   }, []);
-
-  // const handlePublish = useCallback(async () => {
-  //   setIsConfirmPublishModalOpen(false);
-  //   try {
-  //     const schedulesData = pendingSchedules.map(schedule => {
-  //       if (!schedule.careWorkers?.length) {
-  //         throw new Error('At least one care worker is required.');
-  //       }
-  //       if (!schedule.location) {
-  //         throw new Error('Location is required.');
-  //       }
-  //       if (!schedule.date || !/^\d{4}-\d{2}-\d{2}$/.test(schedule.date)) {
-  //         throw new Error('Invalid date format. Expected YYYY-MM-DD.');
-  //       }
-  //       if (!schedule.start || !schedule.end || !/^([01]\d|2[0-3]):[0-5]\d$/.test(schedule.start) || !/^([01]\d|2[0-3]):[0-5]\d$/.test(schedule.end)) {
-  //         throw new Error('Invalid time format. Expected HH:MM.');
-  //       }
-  //       const breakDuration = schedule.breakDuration && /^\d+ mins$/.test(schedule.breakDuration) ? schedule.breakDuration : '0 mins';
-  //       return {
-  //         start: schedule.start,
-  //         end: schedule.end,
-  //         description: schedule.description || '',
-  //         careWorkers: schedule.careWorkers,
-  //         location: schedule.location,
-  //         date: schedule.date,
-  //         break: schedule.break,
-  //         id: schedule.id.split('-')[0],
-  //       };
-  //     });
-  //     console.log('Publishing schedules:', JSON.stringify(schedulesData, null, 2));
-  //     const createResponse = await createSchedulesBatch(schedulesData);
-  //     const scheduleIds = createResponse.data.map(schedule => schedule._id);
-  //     const publishResponse = await publishSchedules(scheduleIds);
-  //     console.log('Publish response:', publishResponse.data);
-  //     const newSchedules = [];
-  //     publishResponse.data.forEach(schedule => {
-  //       const careWorkerIds = Array.isArray(schedule.careWorker)
-  //         ? schedule.careWorker.map(cw => cw._id || cw).filter(Boolean)
-  //         : [schedule.careWorker?._id || schedule.careWorker].filter(Boolean);
-  //       careWorkerIds.forEach(careWorkerId => {
-  //         const careWorkerName = careWorkers.find(w => w._id === careWorkerId)?.name || 'Unknown';
-  //         newSchedules.push({
-  //           id: schedule._id + '-' + careWorkerId,
-  //           start: schedule.start || '',
-  //           end: schedule.end || '',
-  //           description: schedule.description || '',
-  //           careWorkers: [careWorkerId],
-  //           careWorker: careWorkerName,
-  //           location: schedule.location?.name || schedule.location || 'Time Off',
-  //           date: schedule.date || '',
-  //           breakDuration: schedule.break ? `${schedule.break} mins` : '',
-  //           isPublished: true,
-  //           originalScheduleId: schedule._id,
-  //         });
-  //       });
-  //     });
-  //     console.log('New published schedules:', newSchedules);
-  //     setSchedules(prev => [...prev, ...newSchedules]);
-  //     setPendingSchedules([]);
-  //     setError(null);
-  //   } catch (err) {
-  //     console.error('Publish error:', err);
-  //     const message = err.response?.status === 400
-  //       ? err.response?.data?.msg || 'Invalid schedule data'
-  //       : err.response?.status === 401
-  //         ? 'Not authorized. Please log in as admin or manager.'
-  //         : err.message || 'Failed to publish schedules';
-  //     setError(message);
-  //   }
-  // }, [pendingSchedules, careWorkers]);
   const handlePublish = useCallback(async () => {
     setIsConfirmPublishModalOpen(false);
     try {
@@ -1282,11 +1191,9 @@ const SchedulePage = () => {
           id: schedule.id.split('-')[0],
         };
       });
-      console.log('Publishing schedules:', JSON.stringify(schedulesData, null, 2));
       const createResponse = await createSchedulesBatch(schedulesData);
       const scheduleIds = createResponse.data.map(schedule => schedule._id);
       const publishResponse = await publishSchedules(scheduleIds);
-      console.log('Publish response:', publishResponse.data);
       const newSchedules = [];
       publishResponse.data.forEach(schedule => {
         const careWorkerIds = Array.isArray(schedule.careWorker)
@@ -1309,7 +1216,6 @@ const SchedulePage = () => {
           });
         });
       });
-      console.log('New published schedules:', newSchedules);
       setSchedules(prev => [...prev, ...newSchedules]);
       setPendingSchedules([]);
       setError(null);
@@ -1338,7 +1244,6 @@ const SchedulePage = () => {
         newSelected = [...prevSelected, locationId];
       }
       const finalSelected = newSelected.length > 0 ? newSelected : ['time-off'];
-      console.log('Updated selectedLocations:', finalSelected);
       return finalSelected;
     });
   }, [isAdmin]);
@@ -1348,7 +1253,6 @@ const SchedulePage = () => {
     const allLocationIds = allAvailableAreas.map((loc) => loc._id);
     setSelectedLocations((prevSelected) => {
       const newSelected = prevSelected.length === allLocationIds.length ? ['time-off'] : allLocationIds;
-      console.log('Select all locations:', newSelected);
       return newSelected;
     });
   }, [isAdmin, allAvailableAreas]);
@@ -1367,7 +1271,6 @@ const SchedulePage = () => {
       })
       .sort((a, b) => a.start.localeCompare(b.start));
     
-    console.log(`Schedules for ${locationName} on ${dateStr}:`, filteredSchedules);
     return filteredSchedules;
   }, [schedules, pendingSchedules, scheduleFilters]);
 
@@ -1389,7 +1292,6 @@ const SchedulePage = () => {
           [locationId]: { status: 'all', careWorker: 'all' }
         }));
       }
-      console.log('Toggled dropdown for location:', locationId, 'New openLocationDropdowns:', [...newSet]);
       return newSet;
     });
   }, [isAdmin, selectedLocations]);
@@ -1403,23 +1305,19 @@ const SchedulePage = () => {
       }
     });
     const workerList = Array.from(uniqueWorkers).sort();
-    console.log('Dynamic care workers:', workerList);
     return workerList;
   }, [schedules, pendingSchedules, careWorkers]);
 
   const headerLocationButtonText = useMemo(() => {
     if (!allAvailableAreas || allAvailableAreas.length === 0) {
-      console.log('No available areas, defaulting to Time Off');
       return 'Time Off';
     }
     if (selectedLocations.length === 0) {
-      console.log('No locations selected, defaulting to Time Off');
       return 'Time Off';
     }
     if (selectedLocations.length === 1) {
       const selectedLoc = allAvailableAreas.find((loc) => loc._id === selectedLocations[0]);
       if (!selectedLoc) {
-        console.log(`Selected location ID ${selectedLocations[0]} not found in allAvailableAreas`, allAvailableAreas);
         return 'Time Off';
       }
       return selectedLoc.name;
@@ -1674,9 +1572,9 @@ const SchedulePage = () => {
                                 />
                               ))}
                             </div>
-                            {isAdmin && (
+                            { isAdmin && (
                               <button
-                                onClick={() => handleAddSchedule(area.name)}
+                                onClick={() => handleAddSchedule(day.dateStr, area.name)}
                                 className="mt-2 w-full h-7 sm:h-8 rounded-md border border-dashed border-gray-300 text-gray-400 hover:bg-gray-100 transition-colors duration-200 flex items-center justify-center text-xs sm:text-sm min-h-[44px]"
                               >
                                 + Add
