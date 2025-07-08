@@ -49,7 +49,7 @@ pipeline {
             steps {
                 sh '''
                     echo "Cleaning existing deployment..."
-                    rm -rf /var/www/Shiftry-Prod/*
+                    sudo rm -rf /var/www/Shiftry-Prod/*
  
                     echo "Creating target directory..."
                     mkdir -p /var/www/Shiftry-Prod
