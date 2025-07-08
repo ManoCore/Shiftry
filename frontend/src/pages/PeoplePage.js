@@ -107,9 +107,11 @@ const confirmDeleteUser = async () => {
 
     // Filtered users based on search query
     const filteredUsers = users.filter(user =>
+        user.accessLevel !== 'admin' &&(
         (user.name && user.name.toLowerCase().includes(searchQuery.toLowerCase())) ||
         (user.email && user.email.toLowerCase().includes(searchQuery.toLowerCase())) ||
         (user.accessLevel && user.accessLevel.toLowerCase().includes(searchQuery.toLowerCase()))
+        )
     );
 
     return (
