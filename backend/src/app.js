@@ -19,26 +19,10 @@ const subscribeRoutes=require("../src/routes/subscribeRoutes");
 const contactRoutes = require("../src/routes/contactRoutes");
 const leaveRoutes=require("../src/routes/leaveRoutes");
 const app = express();
-
-// const allowedOrigins = process.env.ALLOWED_ORIGINS ?
-//     process.env.ALLOWED_ORIGINS.split(',').map(origin => origin.trim()):[];
-// const corsOptions = {
-//   origin: function (origin, callback) {
-//     if (!origin || allowedOrigins.indexOf(origin) !== -1) {
-//       callback(null, true);
-//     } else {
-//       callback(new Error('Not allowed by CORS'));
-//     }
-//   },
-//   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'], // Specify allowed HTTP methods
-//   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'], // Specify allowed headers
-//   credentials: true, // Allow cookies to be sent with cross-origin requests
-//   optionsSuccessStatus: 200 // Some legacy browsers (IE11, various SmartTVs) choke on 204
-// };
  
 // ✅ These must come BEFORE any routes
 app.use(cors(corsOptions));
-app.options('*', cors(corsOptions));
+// app.options('*', cors(corsOptions));
 app.use(express.json()); // ✅ Moved to the top!
 app.use(cookieParser());
 app.use(errorHandler);
