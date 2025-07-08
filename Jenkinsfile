@@ -14,10 +14,8 @@ pipeline {
 
         stage('Sync to Web Folder') {
             steps {
-                sh '''
-                    rm -rf /var/www/Shiftry-Prod/*
-                    rsync -av --exclude='.git' ./ /var/www/Shiftry-Prod/
-                '''
+                sh 'rm -rf /var/www/Shiftry-Prod/*'
+                sh 'cp -r . /var/www/Shiftry-Prod/'
             }
         }
 
