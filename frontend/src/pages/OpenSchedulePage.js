@@ -4,6 +4,7 @@ import {
     createOrUpdateSchedule,
     updateSchedule,
     fetchSchedulesInRange,
+    fetchMyAssignedShifts,
     fetchAllUsers
 } from "../api";
 import { useAuth } from '../context/AuthContext';
@@ -16,6 +17,7 @@ const OpenSchedules = () => {
     const [showAddShiftModal, setShowAddShiftModal] = useState(false);
     // State for mobile sidebar visibility
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const [myAssignedShifts, setMyAssignedShifts] = useState([]); // <-- NEW STATE: To store all user's assigned shifts
 
 
     // Data States
@@ -69,7 +71,8 @@ const OpenSchedules = () => {
             originalEndTime: schedule.end,
             originalLocationId: schedule.location?._id || schedule.location,
             originalCareWorkerId: schedule.careWorker,
-            createdBy: schedule.createdBy
+            createdBy: schedule.createdBy,
+            isAssignedToCurrentUser: Array.isArray(schedule.careWorker) && schedule.careWorker.includes(user.id)
         }));
     };
 
@@ -119,6 +122,24 @@ const OpenSchedules = () => {
         getUsers();
     }, []);
 
+    useEffect(() => {
+        const getMyAssignedShifts = async () => {
+            if (authLoading || !user) {
+                setMyAssignedShifts([]); // Clear assigned shifts if user logs out or is loading
+                return;
+            }
+            try {
+                // Call the new API to get all assigned shifts for the user
+                const response = await fetchMyAssignedShifts();
+                setMyAssignedShifts(response.data);
+            } catch (err) {
+                console.error("Failed to fetch user's assigned shifts:", err.response?.data || err.message);
+                setMyAssignedShifts([]); // Set to empty array on error
+            }
+        };
+        getMyAssignedShifts();
+    }, [authLoading, user]);
+
     // Effect to fetch schedules and filter for "open" shifts
     useEffect(() => {
         const getSchedulesAndFilterOpen = async () => {
@@ -138,7 +159,7 @@ const OpenSchedules = () => {
                 const openShifts = allFetchedSchedules.filter(schedule =>
                     !schedule.careWorker && schedule.isPublished === false
                 );
-                setCareTakerCards(processShiftData(openShifts));
+                setCareTakerCards(processShiftData(openShifts,user.id));
                 setLoadingShifts(false);
             } catch (err) {
                 console.error("Failed to fetch open shifts:", err.response?.data || err.message);
@@ -211,12 +232,16 @@ const OpenSchedules = () => {
             console.log("Schedule confirmed and updated in database:", response.data);
             setConfirmMessage('Shift successfully confirmed and scheduled!');
 
-            const updatedShiftsResponse = await fetchSchedulesInRange(getTodayDate(), getFutureDate(12));
+           const updatedShiftsResponse = await fetchSchedulesInRange(getTodayDate(), getFutureDate(12));
             const allFetchedSchedules = updatedShiftsResponse.data;
             const openShifts = allFetchedSchedules.filter(schedule =>
                 !schedule.careWorker && schedule.isPublished === false
             );
-            setCareTakerCards(processShiftData(openShifts));
+            setCareTakerCards(processShiftData(openShifts, user.id)); // <-- Pass user.id again
+
+            // NEW: Re-fetch user's assigned shifts to update the `myAssignedShifts` state
+            const assignedResponse = await fetchMyAssignedShifts();
+            setMyAssignedShifts(assignedResponse.data);
 
             setTimeout(() => {
                 handleCloseRulesModal();
@@ -272,11 +297,17 @@ const OpenSchedules = () => {
         try {
             const response = await createOrUpdateSchedule(newShiftPayload);
             console.log("New open shift added successfully to schedules:", response.data);
-
-            setCareTakerCards(prevCards => [...prevCards, processShiftData([response.data])[0]]);
+// Re-fetch all schedules and re-filter for open ones to update the list
+            const updatedShiftsResponse = await fetchSchedulesInRange(getTodayDate(), getFutureDate(12));
+            const allFetchedSchedules = updatedShiftsResponse.data;
+            const openShifts = allFetchedSchedules.filter(schedule =>
+                !schedule.careWorker && schedule.isPublished === false
+            );
+            setCareTakerCards(processShiftData(openShifts, user.id)); // <-- Pass user.id
 
             handleCloseAddShiftModal();
             setConfirmMessage('New open shift added successfully!');
+            setConfirmError(''); // Clear any previous confirmation errors
         } catch (error) {
             console.error("Error adding new open shift:", error.response?.data || error.message);
             setConfirmError('Failed to add new shift. Please try again.');
@@ -508,49 +539,65 @@ const OpenSchedules = () => {
                                     </div>
                                 </div>
                                 {/* Conditionally render Join Work or Assigned button based on card.status */}
-                                {card.status === 'join' ? (
-                                    <button
-                                        onClick={() => handleJoinWorkClick(card)}
-                                        className="w-full flex items-center justify-center bg-red-500 text-white py-2 px-4 rounded-lg hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-700 transition-colors duration-200"
-                                    >
-                                        <svg
-                                            className="mr-2"
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            width="18"
-                                            height="18"
-                                            viewBox="0 0 24 24"
-                                            fill="none"
-                                            stroke="currentColor"
-                                            strokeWidth="2"
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                        >
-                                            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
-                                            <circle cx="9" cy="7" r="4"></circle>
-                                            <line x1="18" y1="8" x2="23" y2="13"></line>
-                                            <line x1="23" y1="8" x2="18" y2="13"></line>
-                                        </svg>
-                                        Join Work
-                                    </button>
-                                ) : (
-                                    <button className="w-full flex items-center justify-center bg-green-500 text-white py-2 px-4 rounded-lg cursor-not-allowed">
-                                        <svg
-                                            className="mr-2"
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            width="18"
-                                            height="18"
-                                            viewBox="0 0 24 24"
-                                            fill="none"
-                                            stroke="currentColor"
-                                            strokeWidth="2"
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                        >
-                                            <polyline points="20 6 9 17 4 12"></polyline>
-                                        </svg>
-                                        Assigned
-                                    </button>
-                                )}
+                                {/* Conditionally render Join Work, Assigned, or "Already scheduled for this day" message */}
+                                <div className="mt-6">
+                                    {card.isAssignedToCurrentUser ? ( // Check if THIS specific card is assigned to the current user
+                                        <button className="w-full flex items-center justify-center bg-green-500 text-white py-3 px-4 rounded-lg cursor-not-allowed shadow-md">
+                                            <svg
+                                                className="mr-2 w-5 h-5"
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                viewBox="0 0 24 24"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                strokeWidth="2"
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                            >
+                                                <polyline points="20 6 9 17 4 12"></polyline>
+                                            </svg>
+                                            Assigned
+                                        </button>
+                                    ) : (
+                                        // Check if the user has ANY assigned shift on THIS card's date
+                                        // This handles the "already scheduled for this day" for other shifts on the same day
+                                        myAssignedShifts.some(assignedShift => assignedShift.date === card.date) ? (
+                                            <p className="text-sm text-yellow-700 bg-yellow-100 p-2 rounded-md text-center">
+                                                You are already scheduled for this day.
+                                            </p>
+                                        ) : (
+                                            // Otherwise, if the card is 'join' status, show the Join Work button
+                                            card.status === 'join' ? (
+                                                <button
+                                                    onClick={() => handleJoinWorkClick(card)}
+                                                    className="w-full flex items-center justify-center bg-red-600 text-white py-3 px-4 rounded-lg shadow-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-800 focus:ring-offset-2 transition-all duration-300 transform hover:scale-105"
+                                                >
+                                                    <svg
+                                                        className="mr-2 w-5 h-5"
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                        viewBox="0 0 24 24"
+                                                        fill="none"
+                                                        stroke="currentColor"
+                                                        strokeWidth="2"
+                                                        strokeLinecap="round"
+                                                        strokeLinejoin="round"
+                                                    >
+                                                        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+                                                        <circle cx="9" cy="7" r="4"></circle>
+                                                        <line x1="18" y1="8" x2="23" y2="13"></line>
+                                                        <line x1="23" y1="8" x2="18" y2="13"></line>
+                                                    </svg>
+                                                    Join Work
+                                                </button>
+                                            ) : (
+                                                // Fallback for shifts that are not 'joinable' and not assigned to current user
+                                                // (e.g., if they are assigned to someone else, but still returned by fetchSchedulesInRange)
+                                                <button className="w-full flex items-center justify-center bg-gray-400 text-white py-3 px-4 rounded-lg cursor-not-allowed shadow-md">
+                                                    Unavailable
+                                                </button>
+                                            )
+                                        )
+                                    )}
+                                </div>
                             </div>
                         ))}
                     </div>

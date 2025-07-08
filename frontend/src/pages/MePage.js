@@ -286,7 +286,7 @@ const MePage = () => {
                                         {(user.role === 'admin' || user.role === 'manager') && (
                                             <button
                                                 className="ml-auto text-blue-600 hover:text-blue-700 text-sm font-semibold"
-                                                onClick={() => navigate(`/open-schedules`)}
+                                                onClick={() => navigate(`/openschedules`)}
                                             >
                                                 Assign
                                             </button>

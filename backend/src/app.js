@@ -19,9 +19,26 @@ const subscribeRoutes=require("../src/routes/subscribeRoutes");
 const contactRoutes = require("../src/routes/contactRoutes");
 const leaveRoutes=require("../src/routes/leaveRoutes");
 const app = express();
+
+// const allowedOrigins = process.env.ALLOWED_ORIGINS ?
+//     process.env.ALLOWED_ORIGINS.split(',').map(origin => origin.trim()):[];
+// const corsOptions = {
+//   origin: function (origin, callback) {
+//     if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+//       callback(null, true);
+//     } else {
+//       callback(new Error('Not allowed by CORS'));
+//     }
+//   },
+//   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'], // Specify allowed HTTP methods
+//   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'], // Specify allowed headers
+//   credentials: true, // Allow cookies to be sent with cross-origin requests
+//   optionsSuccessStatus: 200 // Some legacy browsers (IE11, various SmartTVs) choke on 204
+// };
  
 // ✅ These must come BEFORE any routes
-app.use(cors());
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
 app.use(express.json()); // ✅ Moved to the top!
 app.use(cookieParser());
 app.use(errorHandler);
@@ -43,11 +60,21 @@ app.use('/api/notifications', notificationRoutes);
 app.use("/api",subscribeRoutes);
 app.use("/api/contact", contactRoutes);
 app.use("/api/leave", leaveRoutes);
+
+app.use(errorHandler);
  
-connectDB()
-  .then(() => {
-    app.listen(5000, () => console.log("Server running on port 5000"));
-  })
-  .catch((err) => {
-    console.error("DB connection failed", err.message);
-  }); 
+if (process.env.NODE_ENV !== 'test') {
+  connectDB()
+    .then(() => {
+      app.listen(5000, () => console.log("Server running on port 5000"));
+    })
+    .catch((err) => {
+      console.error("DB connection failed", err.message);
+    });
+} else {
+  // In test environment, we don't connect to the real DB here
+  // We'll handle DB mocking/test DB connection in the test files themselves.
+  console.log('Running in test environment. Server not started, DB connection skipped.');
+}
+
+module.exports = app;

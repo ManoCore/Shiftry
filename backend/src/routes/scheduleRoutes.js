@@ -903,4 +903,20 @@ if (parsedBreakDuration < 0) {
     }
 });
 
+router.get('/my-assigned-shifts', auth, async (req, res) => {
+    try {
+        const loggedInUserId = req.user.id; // User ID from auth middleware
+
+        // Find all schedules where the logged-in user's ID is in the careWorker array
+        const assignedSchedules = await Schedule.find({
+            careWorker: { $in: [loggedInUserId] }
+        }).populate('location', 'name'); // Populate location name if you need it on frontend
+
+        res.status(200).json(assignedSchedules);
+    } catch (error) {
+        console.error("Error fetching user's assigned schedules:", error.message);
+        res.status(500).json({ message: "Server Error", error: error.message });
+    }
+});
+
 module.exports = router;

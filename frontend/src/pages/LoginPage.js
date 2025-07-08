@@ -39,7 +39,7 @@ export default function LoginPage() {
         setError("Login successful, but user data or token missing from response.");
       }
     } catch (err) {
-      setError(err.response?.data?.message || "Login failed.");
+      setError(err.response?.data?.message || "Invalid Email Address or Password.");
     } finally {
       setIsLoading(false);
     }

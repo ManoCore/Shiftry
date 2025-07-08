@@ -24,11 +24,11 @@ function PricingComponent() {
     {
       title: '6-Months Plan', 
       prices: {
-        GBP: '1674',   
-        USD: '1794',   
-        INR: '179994',
+        GBP: '279',   
+        USD: '299',   
+        INR: '29999',
       },
-      periodSuffix: '/6mo',
+      periodSuffix: '/mo',
       features: [
         'All features accessible',
         'Schedule',
@@ -40,9 +40,9 @@ function PricingComponent() {
     {
       title: 'Yearly Plan', 
       prices: {
-        GBP: '4000',   
-        USD: '5000',   
-        INR: '335000', 
+        GBP: '3330',   
+        USD: '3570',   
+        INR: '350000', 
       },
       periodSuffix: '/yr',
       features: [

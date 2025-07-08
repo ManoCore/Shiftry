@@ -5,7 +5,8 @@ const API = axios.create({
   headers: {
     "Content-Type": "application/json",
   },
-});
+  // withCredentials: true
+}); 
  
 API.interceptors.request.use(
   (config) => {
@@ -129,3 +130,5 @@ export const fetchMyLeaveApplications = () => API.get("/api/leave/my-application
 export const fetchAllLeaveApplications = () => API.get("/api/leave/all"); // Added
 export const updateLeaveApplicationStatus = (id, status) => API.put(`/api/leave/${id}/status`, { status });
 export const fetchUserLeaves = (userId) => API.get(`/api/leave/user/${userId}`); // NEWLY ADDED
+
+export const fetchMyAssignedShifts = () => API.get("/api/schedules/my-assigned-shifts");

@@ -30,7 +30,7 @@ export const AuthProvider = ({ children }) => {
               setIsLoggedIn(true); // Assume logged in for now
               tempUser = parsedUser; // Store for later checks
               tempIsLoggedIn = true;
-              console.log("AuthContext: User data loaded from localStorage immediately:", parsedUser);
+              // console.log("AuthContext: User data loaded from localStorage immediately:", parsedUser);
             } catch (parseError) {
               console.error("AuthContext: Error parsing stored user from localStorage. Clearing corrupted data.", parseError);
               localStorage.removeItem('user'); // Clear corrupted user data
@@ -45,7 +45,7 @@ export const AuthProvider = ({ children }) => {
             if (JSON.stringify(data) !== storedUser) {
               setUser(data); // Update with fresh data from API
               localStorage.setItem('user', JSON.stringify(data)); // Store fresh data
-              console.log("AuthContext: User profile updated from API:", data);
+              // console.log("AuthContext: User profile updated from API:", data);
             }
             setIsLoggedIn(true); // Confirm logged in based on successful API fetch
             tempUser = data; // Update tempUser with API data
@@ -92,15 +92,15 @@ export const AuthProvider = ({ children }) => {
     setToken(jwtToken);
     setUser(userData); // Update state immediately
     setIsLoggedIn(true);
-    console.log("AuthContext: User logged in, state updated to:", userData);
+    // console.log("AuthContext: User logged in, state updated to:", userData);
     // Optionally, if login response is minimal, you might want to fetch full profile here too
     // fetchUserProfile().then(({ data }) => setUser(data)).catch(console.error);
   };
    const updateUser = (newUserData) => {
-    console.log("AuthContext: updateUser called with:", newUserData);
+    // console.log("AuthContext: updateUser called with:", newUserData);
     setUser(newUserData);
     localStorage.setItem('user', JSON.stringify(newUserData)); // Also update localStorage
-    console.log("AuthContext: User state updated by updateUser to:", newUserData)
+    // console.log("AuthContext: User state updated by updateUser to:", newUserData)
   };
 
 
