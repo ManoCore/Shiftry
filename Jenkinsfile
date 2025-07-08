@@ -55,7 +55,7 @@ pipeline {
             steps {
                 sh '''
                     export NVM_DIR="/root/.nvm"
-                    [ -s "$NVM_DIR/nvm.sh" ] && \\. "$NVM_DIR/nvm.sh"
+                    . "$NVM_DIR/nvm.sh"
                     nvm use 22
         
                     cd /var/www/Shiftry-Prod
