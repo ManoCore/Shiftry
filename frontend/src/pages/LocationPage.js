@@ -1,7 +1,8 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo, useRef } from "react";
 import { fetchLocations, addLocation, fetchSchedulesInRange, updateLocation, deleteLocation } from "../api";
-import { MapPinIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline';
+import { MapPinIcon, MagnifyingGlassIcon, ArrowUpTrayIcon } from '@heroicons/react/24/outline';
 import { useAuth } from '../context/AuthContext';
+import Papa from 'papaparse';
 
 const getFirstName = (nameOrObject) => {
     if (!nameOrObject) return ''; // Handles null, undefined, or empty array
@@ -47,12 +48,13 @@ export default function LocationPage() {
     const [selectedLocation, setSelectedLocation] = useState("");
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false); // New state for delete confirmation modal
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [editLocation, setEditLocation] = useState(null);
     const [loading, setLoading] = useState(false);
     const [apiError, setApiError] = useState(null);
     const [successMessage, setSuccessMessage] = useState("");
     const { user, token, isLoading: isAuthLoading } = useAuth();
+    const fileInputRef = useRef(null);
 
     const [form, setForm] = useState({
         name: '',
@@ -203,7 +205,7 @@ export default function LocationPage() {
     const handleCloseModal = () => {
         setIsModalOpen(false);
         setIsEditModalOpen(false);
-        setIsDeleteModalOpen(false); // Close delete modal
+        setIsDeleteModalOpen(false);
         setApiError(null);
         setFormError('');
         setEditLocation(null);
@@ -221,7 +223,6 @@ export default function LocationPage() {
             return;
         }
 
-        // Open the delete confirmation modal instead of window.confirm
         setIsDeleteModalOpen(true);
     };
 
@@ -317,6 +318,125 @@ export default function LocationPage() {
         }
     };
 
+    const handleCSVUpload = async (event) => {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        if (!file.name.endsWith('.csv')) {
+            setApiError('Please upload a valid CSV file.');
+            setTimeout(() => setApiError(null), 5000);
+            return;
+        }
+
+        setLoading(true);
+        setApiError(null); // Clear previous errors
+        setSuccessMessage(""); // Clear previous success messages
+
+        Papa.parse(file, {
+            complete: async (result) => {
+                const rows = result.data;
+                console.log('Parsed CSV Rows:', rows); // Debug entire CSV
+
+                // Validate headers
+                const headers = rows[0];
+                const expectedHeaders = ["Location Name", "Street", "City", "Postal Code", "Country", "Work Type"];
+                if (!expectedHeaders.every((header, index) => headers[index] === header)) {
+                    setApiError('Invalid CSV format. Expected headers: ' + expectedHeaders.join(', '));
+                    setLoading(false);
+                    setTimeout(() => setApiError(null), 5000);
+                    return;
+                }
+
+                const newLocations = [];
+                const errors = [];
+
+                for (let i = 1; i < rows.length; i++) {
+                    const row = rows[i];
+                    // Skip empty or invalid rows
+                    if (!row || row.length < 6 || row.every(cell => !cell || cell.trim() === '')) {
+                        console.log(`Skipping invalid or empty row ${i + 1}`);
+                        continue;
+                    }
+
+                    const [name, street, city, postalCode, country, workType] = row.map(cell => cell ? cell.trim().replace(/^"|"$/g, '') : '');
+                    console.log(`Processing row ${i + 1}:`, { name, street, city, postalCode, country, workType }); // Debug row data
+
+                    // Validate required fields
+                    if (!name || !street || !city || !workType) {
+                        errors.push(`Row ${i + 1}: Missing required fields (name, street, city, work type)`);
+                        console.log(`Validation failed for row ${i + 1}: Missing fields`);
+                        continue;
+                    }
+
+                    // Validate workType (case-insensitive)
+                    if (workType.toUpperCase() !== "SUPPORT WORKER") {
+                        errors.push(`Row ${i + 1}: Invalid work type. Must be 'SUPPORT WORKER'`);
+                        console.log(`Invalid workType for row ${i + 1}: ${workType}`);
+                        continue;
+                    }
+
+                    const locationData = {
+                        name,
+                        address: {
+                            street,
+                            city,
+                            postalCode: postalCode || '',
+                            country: country || '',
+                        },
+                        workType: "SUPPORT WORKER",
+                        isCustom: true,
+                    };
+
+                    try {
+                        const res = await addLocation(locationData);
+                        console.log(`API Response for row ${i + 1}:`, { status: res.status, data: res.data }); // Debug API response
+                        if (res.status >= 200 && res.status < 300) {
+                            newLocations.push({ ...res.data, _id: res.data._id || Date.now() });
+                        } else {
+                            errors.push(`Row ${i + 1}: Unexpected API response status ${res.status}`);
+                        }
+                    } catch (err) {
+                        console.error(`Failed to add location at row ${i + 1}:`, {
+                            message: err.message,
+                            status: err.response?.status,
+                            data: err.response?.data,
+                        });
+                        errors.push(`Row ${i + 1}: ${err.response?.data?.msg || 'Unknown error'}`);
+                    }
+                }
+
+                // Update state based on results
+                if (newLocations.length > 0) {
+                    setLocations((prev) => [...prev, ...newLocations]);
+                    let message = `Successfully imported ${newLocations.length} location(s)`;
+                    if (errors.length > 0) {
+                        message += `. ${errors.length} row(s) failed: ${errors.join('; ')}`;
+                        setApiError(message);
+                    } else {
+                        setSuccessMessage(message);
+                    }
+                } else {
+                    setApiError(errors.length > 0 ? `No locations imported. Errors: ${errors.join('; ')}` : 'No valid locations found in the CSV file.');
+                }
+
+                setLoading(false);
+                fileInputRef.current.value = ''; // Reset file input
+                setTimeout(() => {
+                    setApiError(null);
+                    setSuccessMessage("");
+                }, 8000); // Extended timeout for longer error messages
+            },
+            error: (err) => {
+                console.error('CSV Parsing Error:', err);
+                setApiError('Failed to parse CSV file. Please ensure it is formatted correctly.');
+                setLoading(false);
+                setTimeout(() => setApiError(null), 5000);
+            },
+            header: false,
+            skipEmptyLines: true,
+        });
+    };
+
     const isAuthorized = user && (user.role === "admin" || user.role === "manager");
     const isAdmin = user && user.role === "admin";
 
@@ -410,6 +530,22 @@ export default function LocationPage() {
                                     </span>
                                     <span className="font-medium">Export</span>
                                 </button>
+                                <div>
+                                    <input
+                                        type="file"
+                                        accept=".csv"
+                                        ref={fileInputRef}
+                                        className="hidden"
+                                        onChange={handleCSVUpload}
+                                    />
+                                    <button
+                                        className="p-2 border border-blue-500 bg-blue-50 text-blue-600 rounded-md w-full md:w-[140px] flex items-center justify-center hover:bg-blue-100 transition duration-200"
+                                        onClick={() => fileInputRef.current.click()}
+                                    >
+                                        <ArrowUpTrayIcon className="w-[20px] mr-1" />
+                                        <span className="font-medium">Upload CSV</span>
+                                    </button>
+                                </div>
                             </div>
                         )}
                     </div>
