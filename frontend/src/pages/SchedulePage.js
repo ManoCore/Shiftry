@@ -460,7 +460,7 @@ const NewAreaModal = ({ isOpen, onClose, availableCareWorkers, setLocations }) =
       };
       await addLocation(newLocation);
       const locationsResponse = await fetchLocations();
-      setLocations(locationsResponse.data || []);
+      setLocations(locationsResponse.data.data || []);
       onClose();
     } catch (err) {
       console.error('Error saving location:', err);
@@ -689,7 +689,7 @@ const SchedulePage = () => {
       if (!initialFetchDone.current) {
         const usersResponse = await fetchAllUsers();
         console.log('Fetched details of users : ',usersResponse)
-        const fetchedCareWorkers = usersResponse.data.map(user => ({
+        const fetchedCareWorkers = usersResponse.data.data.map(user => ({
           _id: user._id,
           name: user.name || `${user.firstName} ${user.lastName}`,
           role:user.access,
@@ -699,8 +699,8 @@ const SchedulePage = () => {
         setCareWorkers(fetchedCareWorkers);
 
         const locationsResponse = await fetchLocations();
-        console.log('Fetched locations:', locationsResponse.data);
-        setLocations(locationsResponse.data || []);
+        console.log('Fetched locations:', locationsResponse.data.data);
+        setLocations(locationsResponse.data.data || []);
       }
 
       // Fetch schedules for the current week
@@ -711,7 +711,7 @@ const SchedulePage = () => {
       console.log('Raw schedules response:', schedulesResponse.data);
 
       const transformedSchedules = [];
-      schedulesResponse.data.forEach(schedule => {
+      schedulesResponse.data.data.forEach(schedule => {
         const scheduleLocation = schedule.location?.name || (typeof schedule.location === 'string' ? schedule.location : 'Time Off');
         if (!schedule.careWorker) {
           console.log(`Schedule ${schedule._id} has no careWorker`);
@@ -1349,11 +1349,11 @@ const SchedulePage = () => {
       });
       console.log('Publishing schedules:', JSON.stringify(schedulesData, null, 2));
       const createResponse = await createSchedulesBatch(schedulesData);
-      const scheduleIds = createResponse.data.map(schedule => schedule._id);
+      const scheduleIds = createResponse.data.data.map(schedule => schedule._id);
       const publishResponse = await publishSchedules(scheduleIds);
-      console.log('Publish response:', publishResponse.data);
+      console.log('Publish response:', publishResponse.data.data);
       const newSchedules = [];
-      publishResponse.data.forEach(schedule => {
+      publishResponse.data.data.forEach(schedule => {
         const careWorkerIds = Array.isArray(schedule.careWorker)
           ? schedule.careWorker.map(cw => cw._id || cw).filter(Boolean)
           : [schedule.careWorker?._id || schedule.careWorker].filter(Boolean);

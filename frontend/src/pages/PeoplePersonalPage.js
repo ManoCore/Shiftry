@@ -1,5 +1,6 @@
+
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate,useParams } from 'react-router-dom';
 import {
   fetchUserById,
   // updateUserProfile,
@@ -7,7 +8,8 @@ import {
   fetchUserLeaves,
   updateLeaveApplicationStatus,
   sendPasswordResetEmailForUser, 
-  resetUserLoginCredentials // NEW: Import the new API function
+  resetUserLoginCredentials,
+inviteUser
 } from '../api';
 import { useAuth } from '../context/AuthContext';
 import { FaUser, FaEnvelope, FaCamera, FaHome, FaHeart, FaShareAlt, FaCalendarAlt, FaKey } from 'react-icons/fa';
@@ -52,7 +54,7 @@ const Spinner = () => (
 );
 
 // Login Assistance Modal Component (Updated to use actual APIs)
-const LoginAssistanceModal = ({ isOpen, onClose, userEmail, userId }) => {
+const LoginAssistanceModal = ({ isOpen, onClose, userEmail, userId ,userFirstName, userLastName, userRole,userStatus}) => {
   const [modalMessage, setModalMessage] = useState('');
   const [isSending, setIsSending] = useState(false);
   const [newEmail, setNewEmail] = useState(''); // State for new email input
@@ -76,6 +78,7 @@ const LoginAssistanceModal = ({ isOpen, onClose, userEmail, userId }) => {
     try {
       const response = await sendPasswordResetEmailForUser(userId); // Call the actual API
       setModalMessage(response.data.message || 'Password reset email sent successfully!');
+console.log(response.data.message);
     } catch (error) {
       console.error('Error sending reset email:', error);
       setModalMessage(error.response?.data?.message || 'Failed to send reset email. Please try again.');
@@ -108,6 +111,66 @@ const LoginAssistanceModal = ({ isOpen, onClose, userEmail, userId }) => {
       setIsSending(false);
     }
   };
+
+  const handleSendUniqueInviteLink = async () => {
+    setIsSending(true);
+    setModalMessage(''); // Clear any previous modal messages for this action
+    try {
+      const payload = {
+        firstName: userFirstName,
+        lastName: userLastName,
+        emailId: userEmail, 
+        role: userRole 
+      };
+
+      // Ensure 'inviteUser' is imported in the parent and passed down, or imported directly here
+      // For this example, assuming inviteUser is imported at the top of this file
+      const res = await inviteUser(payload);
+
+      setModalMessage(res.message || 'Unique invite link sent successfully!');
+    
+    } catch (error) {
+        console.error('Error in handleSendUniqueInviteLink:', error);
+
+        let errorMessage = 'Failed to send unique invite link. An unknown error occurred.';
+
+        if (error.response) {
+            // The request was made and the server responded with a status code
+            // that falls out of the range of 2xx
+            console.error('Error response data:', error.response.data);
+            console.error('Error response status:', error.response.status);
+
+            // --- IMPORTANT CHANGE HERE ---
+            // First, check for the 'error' field, which your backend uses
+            if (error.response.data && typeof error.response.data === 'object' && 'error' in error.response.data) {
+                errorMessage = error.response.data.error;
+            }
+            // Fallback to 'message' if 'error' is not present (for other potential backend responses)
+            else if (error.response.data && typeof error.response.data === 'object' && 'message' in error.response.data) {
+                errorMessage = error.response.data.message;
+            }
+            // If the response data is a plain string (less common with your current backend setup, but good for robustness)
+            else if (typeof error.response.data === 'string' && error.response.data.trim() !== '') {
+                errorMessage = error.response.data;
+            }
+            // Fallback to status text if no specific message is found in data
+            else {
+                errorMessage = error.response.statusText || `Error ${error.response.status}`;
+            }
+        } else if (error.request) {
+            // The request was made but no response was received (e.g., network error)
+            errorMessage = 'No response from server. Check your network connection or server status.';
+        } else {
+            // Something happened in setting up the request that triggered an Error
+            errorMessage = error.message;
+        }
+
+        setModalMessage(errorMessage); // Display extracted error in modal
+    } finally {
+        setIsSending(false);
+    }
+};
+
 
   if (!isOpen) return null;
 
@@ -194,6 +257,21 @@ const LoginAssistanceModal = ({ isOpen, onClose, userEmail, userId }) => {
               </form>
             )}
           </div>
+
+          {/* New Issue 3: Send Unique Invite Link */}
+          <div>
+            <h3 className="text-lg font-semibold text-gray-800 mb-2">Issue 3: Re-send Invite Link</h3>
+            <p className="text-gray-700 mb-3">
+              Has this user not completed their registration? Send them a new unique invite link.
+            </p>
+            <button
+              onClick={handleSendUniqueInviteLink}
+              className="w-full bg-purple-600 text-white px-4 py-2 rounded-md hover:bg-purple-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={isSending}
+            >
+              {isSending ? <Spinner /> : 'Send Unique Invite Link'}
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -230,6 +308,7 @@ export default function PeoplePersonalPage({ targetUserId }) {
       try {
         const response = await fetchUserLeaves(targetUserId);
         const leavesData = response.data.data;
+        console.log(leavesData)
 
         if (Array.isArray(leavesData)) {
           setUserLeaveApplications(leavesData);
@@ -262,7 +341,7 @@ export default function PeoplePersonalPage({ targetUserId }) {
       setError('');
       try {
         const response = await fetchUserById(targetUserId);
-        const userData = response.data;
+        const userData = response.data.data;
         console.log(userData);
         if (userData) {
           setTargetUser(userData);
@@ -330,12 +409,6 @@ export default function PeoplePersonalPage({ targetUserId }) {
         <div className="bg-white p-8 rounded-lg shadow-xl text-center">
           <h2 className="text-2xl font-bold text-red-600 mb-4">Access Denied</h2>
           <p className="text-gray-700">You do not have permission to view this user's profile.</p>
-          <button
-            onClick={() => navigate('/dashboard')}
-            className="mt-6 bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700"
-          >
-            Go to Dashboard
-          </button>
         </div>
       </div>
     );
@@ -950,6 +1023,9 @@ export default function PeoplePersonalPage({ targetUserId }) {
         onClose={() => setIsLoginAssistanceModalOpen(false)}
         userEmail={targetUser.emailId}
         userId={targetUser._id}
+        userFirstName={targetUser.firstName} // Pass first name
+          userLastName={targetUser.lastName}   // Pass last name
+          userRole={targetUser.role}
       />
     </div>
   );

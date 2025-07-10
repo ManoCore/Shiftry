@@ -64,6 +64,15 @@ export default function UserAvatarDropdown({ onLogout }) {
                     >
                         Profile
                     </button>
+                    {user && user.role === 'admin' && (<button
+                        className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        onClick={() => {
+                            navigate("/businessprofile"); // Consider if this route is appropriate in a logged-in user's dropdown
+                            setIsOpen(false);
+                        }}
+                    >
+                        Business Profile
+                    </button>)}
                     <button
                         className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                         onClick={() => {

@@ -18,6 +18,11 @@ const commentSchema = new mongoose.Schema({
 });
 
 const postSchema = new mongoose.Schema({
+  organization: { // NEW FIELD: Post belongs to an organization
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Organization',
+        required: true,
+    },
   author: {
     type: String, // Or mongoose.Schema.Types.ObjectId if you have a User model
     required: true,

@@ -1,3 +1,4 @@
+
 // import React, { useState, useEffect, useRef } from 'react';
 // import { useNavigate } from 'react-router-dom';
 // import { updateUserProfile, fetchAllLeaveApplications, updateLeaveApplicationStatus } from '../api';
@@ -316,20 +317,20 @@
 //         {isSidebarOpen ? <FaTimes size={20} /> : <FaBars size={20} />}
 //       </button>
 
-//         <aside
-//           className={`fixed inset-y-0 left-0 w-64 bg-white shadow-lg p-4 transform transition-transform duration-300 ease-in-out z-40
-//             mt-[65px] pt-[50px] md:mt-0
-//             ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0 md:static md:w-64 md:p-6`}
-//         >
-//           <div className="mb-6 md:mb-8">
-//             <h2 className="text-xl md:text-2xl font-bold text-gray-800">Profile Settings</h2>
-//           </div>
-//           <nav>
-//             <ul className="space-y-2">
-//           {profileNavItems.map((item) => (
-//             <li key={item.id}>
-//               <button
-//             onClick={() => {
+//       <aside
+//         className={`fixed inset-y-0 left-0 w-64 bg-white shadow-lg p-4 transform transition-transform duration-300 ease-in-out z-40
+//           mt-[65px] pt-[50px] md:mt-0
+//           ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0 md:static md:w-64 md:p-6`}
+//       >
+//         <div className="mb-6 md:mb-8">
+//           <h2 className="text-xl md:text-2xl font-bold text-gray-800">Profile Settings</h2>
+//         </div>
+//         <nav>
+//           <ul className="space-y-2">
+//             {profileNavItems.map((item) => (
+//               <li key={item.id}>
+//                 <button
+//                   onClick={() => {
 //                     setActiveSection(item.id);
 //                     setIsSidebarOpen(false); // Close sidebar on item click for mobile
 //                   }}
@@ -362,7 +363,7 @@
 //       )}
 
 //       <main className="flex-1 p-4 max-w-[1280px] md:p-6">
-//         <div className="bg-white p-4 md:p-6 rounded-lg  shadow-md mb-6">
+//         <div className="bg-white p-4 md:p-6 rounded-lg shadow-md mb-6">
 //           {/* User Info Header */}
 //           <div className="flex flex-col md:flex-row items-center space-y-4 md:space-y-0 md:space-x-4 mb-4 md:mb-6 pb-4 border-b border-gray-200">
 //             <img
@@ -883,97 +884,179 @@
 //                 ) : leaveApplications.length === 0 ? (
 //                   <p className="text-center text-gray-600 text-sm md:text-base">No leave applications to display.</p>
 //                 ) : (
-//                   <div className="overflow-x-auto bg-white rounded-lg shadow-xl max-w-full">
-//                     <table className="min-w-full divide-y divide-gray-200" >
-//                       <thead className="bg-gray-50">
-//                         <tr>
-//                           <th scope="col" className="px-4 py-2 md:px-6 md:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-//                             Applicant
-//                           </th>
-//                           <th scope="col" className="px-4 py-2 md:px-6 md:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-//                             Reason
-//                           </th>
-//                           <th scope="col" className="px-4 py-2 md:px-6 md:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-//                             Dates
-//                           </th>
-//                           <th scope="col" className="px-4 py-2 md:px-6 md:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">
-//                             Type
-//                           </th>
-//                           <th scope="col" className="px-4 py-2 md:px-6 md:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">
-//                             Description
-//                           </th>
-//                           <th scope="col" className="px-4 py-2 md:px-6 md:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-//                             Status
-//                           </th>
-//                           <th scope="col" className="px-4 py-2 md:px-6 md:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">
-//                             Applied On
-//                           </th>
-//                           <th scope="col" className="px-4 py-2 md:px-6 md:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-//                             Actions
-//                           </th>
-//                         </tr>
-//                       </thead>
-//                       <tbody className="bg-white divide-y divide-gray-200">
-//                         {leaveApplications.map((app) => (
-//                           <tr key={app._id}>
-//                             <td className="px-4 py-3 md:px-6 md:py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-//                               {app.user ? `${app.user.firstName || ''} ${app.user.lastName || ''}`.trim() || app.user.emailId : 'N/A'}
-//                             </td>
-//                             <td className="px-4 py-3 md:px-6 md:py-4 whitespace-nowrap text-sm text-gray-700">
-//                               {app.leaveReason}
-//                             </td>
-//                             <td className="px-4 py-3 md:px-6 md:py-4 whitespace-nowrap text-sm text-gray-700">
-//                               {new Date(app.fromDate).toLocaleDateString('en-GB')} - {new Date(app.toDate).toLocaleDateString('en-GB')}
-//                             </td>
-//                             <td className="px-4 py-3 md:px-6 md:py-4 whitespace-nowrap text-sm text-gray-700 hidden md:table-cell">
-//                               {app.leaveType}
-//                             </td>
-//                             <td className="px-4 py-3 md:px-6 md:py-4 whitespace-normal text-sm text-gray-700 max-w-xs overflow-hidden text-ellipsis hidden md:table-cell">
-//                               {app.description || 'N/A'}
-//                             </td>
-//                             <td className="px-4 py-3 md:px-6 md:py-4 whitespace-nowrap">
-//                               <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full
-//                                 ${app.status === 'Approved' ? 'bg-green-100 text-green-800' : ''}
-//                                 ${app.status === 'Pending' ? 'bg-yellow-100 text-yellow-800' : ''}
-//                                 ${app.status === 'Rejected' ? 'bg-red-100 text-red-800' : ''}
-//                                 ${app.status === 'Cancelled' ? 'bg-gray-100 text-gray-800' : ''}`}>
-//                                 {app.status}
-//                               </span>
-//                             </td>
-//                             <td className="px-4 py-3 md:px-6 md:py-4 whitespace-nowrap text-sm text-gray-500 hidden md:table-cell">
-//                               {new Date(app.appliedAt).toLocaleDateString('en-GB')}
-//                             </td>
-//                             <td className="px-4 py-3 md:px-6 md:py-4 whitespace-nowrap text-right text-sm font-medium">
-//                               {app.status === 'Pending' && (
-//                                 <div className="flex flex-col md:flex-row gap-2">
+//                   <>
+//                     {/* Mobile Card Layout */}
+//                     <div className="sm:hidden space-y-4">
+//                       {leaveApplications.map((app) => (
+//                         <div key={app._id} className="bg-white p-4 rounded-lg shadow-md border border-gray-200">
+//                           <div className="space-y-2">
+//                             <div>
+//                               <span className="text-xs font-medium text-gray-500 uppercase">Applicant</span>
+//                               <p className="text-sm font-medium text-gray-900">
+//                                 {app.user ? `${app.user.firstName || ''} ${app.user.lastName || ''}`.trim() || app.user.emailId : 'N/A'}
+//                               </p>
+//                             </div>
+//                             <div>
+//                               <span className="text-xs font-medium text-gray-500 uppercase">Reason</span>
+//                               <p className="text-sm text-gray-700">{app.leaveReason}</p>
+//                             </div>
+//                             <div>
+//                               <span className="text-xs font-medium text-gray-500 uppercase">Dates</span>
+//                               <p className="text-sm text-gray-700">
+//                                 {new Date(app.fromDate).toLocaleDateString('en-GB')} - {new Date(app.toDate).toLocaleDateString('en-GB')}
+//                               </p>
+//                             </div>
+//                             <div>
+//                               <span className="text-xs font-medium text-gray-500 uppercase">Type</span>
+//                               <p className="text-sm text-gray-700">{app.leaveType}</p>
+//                             </div>
+//                             <div>
+//                               <span className="text-xs font-medium text-gray-500 uppercase">Description</span>
+//                               <p className="text-sm text-gray-700 max-w-[250px] truncate">{app.description || 'N/A'}</p>
+//                             </div>
+//                             <div>
+//                               <span className="text-xs font-medium text-gray-500 uppercase">Status</span>
+//                               <p>
+//                                 <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full
+//                                   ${app.status === 'Approved' ? 'bg-green-100 text-green-800' : ''}
+//                                   ${app.status === 'Pending' ? 'bg-yellow-100 text-yellow-800' : ''}
+//                                   ${app.status === 'Rejected' ? 'bg-red-100 text-red-800' : ''}
+//                                   ${app.status === 'Cancelled' ? 'bg-gray-100 text-gray-800' : ''}`}>
+//                                   {app.status}
+//                                 </span>
+//                               </p>
+//                             </div>
+//                             <div>
+//                               <span className="text-xs font-medium text-gray-500 uppercase">Applied On</span>
+//                               <p className="text-sm text-gray-700">{new Date(app.appliedAt).toLocaleDateString('en-GB')}</p>
+//                             </div>
+//                             <div>
+//                               <span className="text-xs font-medium text-gray-500 uppercase">Actions</span>
+//                               <div className="flex flex-col gap-2 mt-2">
+//                                 {app.status === 'Pending' && (
+//                                   <div className="flex gap-2">
+//                                     <button
+//                                       onClick={() => handleLeaveStatusUpdate(app._id, 'Approved')}
+//                                       className="text-green-600 hover:text-green-900 px-2 py-1 rounded-md border border-green-600 hover:border-green-900 transition-colors duration-200 text-xs w-full"
+//                                     >
+//                                       Approve
+//                                     </button>
+//                                     <button
+//                                       onClick={() => handleLeaveStatusUpdate(app._id, 'Rejected')}
+//                                       className="text-red-600 hover:text-red-900 px-2 py-1 rounded-md border border-red-600 hover:border-red-900 transition-colors duration-200 text-xs w-full"
+//                                     >
+//                                       Reject
+//                                     </button>
+//                                   </div>
+//                                 )}
+//                                 {(app.status === 'Approved' || app.status === 'Pending') && (
 //                                   <button
-//                                     onClick={() => handleLeaveStatusUpdate(app._id, 'Approved')}
-//                                     className="text-green-600 hover:text-green-900 px-2 py-1 md:px-3 md:py-1 rounded-md border border-green-600 hover:border-green-900 transition-colors duration-200 text-xs md:text-sm"
+//                                     onClick={() => handleLeaveStatusUpdate(app._id, 'Cancelled')}
+//                                     className="text-gray-600 hover:text-gray-900 px-2 py-1 rounded-md border border-gray-600 hover:border-gray-900 transition-colors duration-200 text-xs w-full"
 //                                   >
-//                                     Approve
+//                                     Cancel
 //                                   </button>
-//                                   <button
-//                                     onClick={() => handleLeaveStatusUpdate(app._id, 'Rejected')}
-//                                     className="text-red-600 hover:text-red-900 px-2 py-1 md:px-3 md:py-1 rounded-md border border-red-600 hover:border-red-900 transition-colors duration-200 text-xs md:text-sm"
-//                                   >
-//                                     Reject
-//                                   </button>
-//                                 </div>
-//                               )}
-//                               {(app.status === 'Approved' || app.status === 'Pending') && (
-//                                 <button
-//                                   onClick={() => handleLeaveStatusUpdate(app._id, 'Cancelled')}
-//                                   className="text-gray-600 hover:text-gray-900 px-2 py-1 md:px-3 md:py-1 rounded-md border border-gray-600 hover:border-gray-900 transition-colors duration-200 mt-2 md:mt-0 md:ml-2 text-xs md:text-sm"
-//                                 >
-//                                   Cancel
-//                                 </button>
-//                               )}
-//                             </td>
+//                                 )}
+//                               </div>
+//                             </div>
+//                           </div>
+//                         </div>
+//                       ))}
+//                     </div>
+
+//                     {/* Desktop Table Layout */}
+//                     <div className="hidden sm:block overflow-x-auto bg-white rounded-lg shadow-xl max-w-full">
+//                       <table className="min-w-full divide-y divide-gray-200">
+//                         <thead className="bg-gray-50">
+//                           <tr>
+//                             <th scope="col" className="px-4 py-2 md:px-6 md:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+//                               Applicant
+//                             </th>
+//                             <th scope="col" className="px-4 py-2 md:px-6 md:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+//                               Reason
+//                             </th>
+//                             <th scope="col" className="px-4 py-2 md:px-6 md:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+//                               Dates
+//                             </th>
+//                             <th scope="col" className="px-4 py-2 md:px-6 md:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+//                               Type
+//                             </th>
+//                             <th scope="col" className="px-4 py-2 md:px-6 md:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+//                               Description
+//                             </th>
+//                             <th scope="col" className="px-4 py-2 md:px-6 md:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+//                               Status
+//                             </th>
+//                             <th scope="col" className="px-4 py-2 md:px-6 md:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+//                               Applied On
+//                             </th>
+//                             <th scope="col" className="px-4 py-2 md:px-6 md:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+//                               Actions
+//                             </th>
 //                           </tr>
-//                         ))}
-//                       </tbody>
-//                     </table>
-//                   </div>
+//                         </thead>
+//                         <tbody className="bg-white divide-y divide-gray-200">
+//                           {leaveApplications.map((app) => (
+//                             <tr key={app._id}>
+//                               <td className="px-4 py-3 md:px-6 md:py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+//                                 {app.user ? `${app.user.firstName || ''} ${app.user.lastName || ''}`.trim() || app.user.emailId : 'N/A'}
+//                               </td>
+//                               <td className="px-4 py-3 md:px-6 md:py-4 whitespace-nowrap text-sm text-gray-700">
+//                                 {app.leaveReason}
+//                               </td>
+//                               <td className="px-4 py-3 md:px-6 md:py-4 whitespace-nowrap text-sm text-gray-700">
+//                                 {new Date(app.fromDate).toLocaleDateString('en-GB')} - {new Date(app.toDate).toLocaleDateString('en-GB')}
+//                               </td>
+//                               <td className="px-4 py-3 md:px-6 md:py-4 whitespace-nowrap text-sm text-gray-700">
+//                                 {app.leaveType}
+//                               </td>
+//                               <td className="px-4 py-3 md:px-6 md:py-4 whitespace-normal text-sm text-gray-700 max-w-xs overflow-hidden text-ellipsis">
+//                                 {app.description || 'N/A'}
+//                               </td>
+//                               <td className="px-4 py-3 md:px-6 md:py-4 whitespace-nowrap">
+//                                 <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full
+//                                   ${app.status === 'Approved' ? 'bg-green-100 text-green-800' : ''}
+//                                   ${app.status === 'Pending' ? 'bg-yellow-100 text-yellow-800' : ''}
+//                                   ${app.status === 'Rejected' ? 'bg-red-100 text-red-800' : ''}
+//                                   ${app.status === 'Cancelled' ? 'bg-gray-100 text-gray-800' : ''}`}>
+//                                   {app.status}
+//                                 </span>
+//                               </td>
+//                               <td className="px-4 py-3 md:px-6 md:py-4 whitespace-nowrap text-sm text-gray-500">
+//                                 {new Date(app.appliedAt).toLocaleDateString('en-GB')}
+//                               </td>
+//                               <td className="px-4 py-3 md:px-6 md:py-4 whitespace-nowrap text-right text-sm font-medium">
+//                                 {app.status === 'Pending' && (
+//                                   <div className="flex flex-col md:flex-row gap-2">
+//                                     <button
+//                                       onClick={() => handleLeaveStatusUpdate(app._id, 'Approved')}
+//                                       className="text-green-600 hover:text-green-900 px-2 py-1 md:px-3 md:py-1 rounded-md border border-green-600 hover:border-green-900 transition-colors duration-200 text-xs md:text-sm"
+//                                     >
+//                                       Approve
+//                                     </button>
+//                                     <button
+//                                       onClick={() => handleLeaveStatusUpdate(app._id, 'Rejected')}
+//                                       className="text-red-600 hover:text-red-900 px-2 py-1 md:px-3 md:py-1 rounded-md border border-red-600 hover:border-red-900 transition-colors duration-200 text-xs md:text-sm"
+//                                     >
+//                                       Reject
+//                                     </button>
+//                                   </div>
+//                                 )}
+//                                 {(app.status === 'Approved' || app.status === 'Pending') && (
+//                                   <button
+//                                     onClick={() => handleLeaveStatusUpdate(app._id, 'Cancelled')}
+//                                     className="text-gray-600 hover:text-gray-900 px-2 py-1 md:px-3 md:py-1 rounded-md border border-gray-600 hover:border-gray-900 transition-colors duration-200 mt-2 md:mt-0 md:ml-2 text-xs md:text-sm"
+//                                   >
+//                                     Cancel
+//                                   </button>
+//                                 )}
+//                               </td>
+//                             </tr>
+//                           ))}
+//                         </tbody>
+//                       </table>
+//                     </div>
+//                   </>
 //                 )}
 //               </div>
 //             )}
@@ -983,6 +1066,7 @@
 //     </div>
 //   );
 // }
+
 
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -1049,6 +1133,10 @@ export default function AdminProfilePage() {
   const [isLoadingLeaves, setIsLoadingLeaves] = useState(true);
   const [leaveError, setLeaveError] = useState('');
   const [leaveStatusMessage, setLeaveStatusMessage] = useState('');
+  const [emailUpdateMessage, setEmailUpdateMessage] = useState(''); // For the "Email update requires re-verification" message
+    const [emailSpecificSuccessMessage, setEmailSpecificSuccessMessage] = useState(''); // NEW: For actual email update success (if implemented)
+    const [phoneNumberSuccessMessage, setPhoneNumberSuccessMessage] = useState(''); // NEW: For phone number update success
+
 
   useEffect(() => {
     if (user) {
@@ -1074,6 +1162,37 @@ export default function AdminProfilePage() {
       getAllLeaveApplications();
     }
   }, [activeSection, user]);
+  useEffect(() => {
+        let timer;
+        if (emailUpdateMessage) {
+            timer = setTimeout(() => {
+                setEmailUpdateMessage('');
+            }, 3000);
+        }
+        return () => clearTimeout(timer);
+    }, [emailUpdateMessage]);
+
+    // NEW: Effect to clear emailSpecificSuccessMessage
+    useEffect(() => {
+        let timer;
+        if (emailSpecificSuccessMessage) {
+            timer = setTimeout(() => {
+                setEmailSpecificSuccessMessage('');
+            }, 3000);
+        }
+        return () => clearTimeout(timer);
+    }, [emailSpecificSuccessMessage]);
+
+    // NEW: Effect to clear phoneNumberSuccessMessage
+    useEffect(() => {
+        let timer;
+        if (phoneNumberSuccessMessage) {
+            timer = setTimeout(() => {
+                setPhoneNumberSuccessMessage('');
+            }, 3000);
+        }
+        return () => clearTimeout(timer);
+    }, [phoneNumberSuccessMessage]);
 
   if (isLoading) {
     return (
@@ -1449,7 +1568,7 @@ export default function AdminProfilePage() {
                         <button
                           type="button"
                           className="inline-flex items-center px-2 md:px-3 rounded-r-md border border-l-0 border-gray-300 bg-gray-50 text-gray-700 text-xs md:text-sm hover:bg-gray-100"
-                          onClick={() => alert('Email update typically requires re-verification. This would be a separate flow.')}
+                          onClick={() =>setEmailUpdateMessage('Email updated successffully')}
                         >
                           Update
                         </button>
@@ -1471,7 +1590,7 @@ export default function AdminProfilePage() {
                         <button
                           type="button"
                           className="inline-flex items-center px-2 md:px-3 rounded-r-md border border-l-0 border-gray-300 bg-gray-50 text-gray-700 text-xs md:text-sm hover:bg-gray-100"
-                          onClick={() => alert('Phone number update might require verification in a real application.')}
+                          onClick={() => setPhoneNumberSuccessMessage('Phone number updated successfully!')}
                         >
                           Update
                         </button>

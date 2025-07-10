@@ -18,13 +18,16 @@ const notificationRoutes=require("../src/routes/notificationRoutes");
 const subscribeRoutes=require("../src/routes/subscribeRoutes");
 const contactRoutes = require("../src/routes/contactRoutes");
 const leaveRoutes=require("../src/routes/leaveRoutes");
+const organizationRoutes =require("./routes/organizationRoutes");
+const superadminRoutes =require("./routes/superadminRoutes");
+
 const app = express();
  
 // ✅ These must come BEFORE any routes
 app.use(cors());
 app.use(express.json()); // ✅ Moved to the top!
 app.use(cookieParser());
-app.use(errorHandler);
+
  
 const projectRoot = path.join(__dirname, '..'); // Go up one level from 'backend' to the project root
 const uploadsPath = path.join(projectRoot, 'uploads'); // Then append 'uploads'
@@ -43,6 +46,10 @@ app.use('/api/notifications', notificationRoutes);
 app.use("/api",subscribeRoutes);
 app.use("/api/contact", contactRoutes);
 app.use("/api/leave", leaveRoutes);
+app.use("/organization",organizationRoutes);
+app.use("/superadmin",superadminRoutes);
+
+
 
 app.use(errorHandler);
  

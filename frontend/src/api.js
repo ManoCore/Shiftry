@@ -34,7 +34,7 @@ export const inviteUser = (userData) => API.post("/users/generate-invite", userD
 export const acceptInvite = (data) => API.post("/users/accept-invite", data);
 export const getUserByInviteToken = (token) => API.get(`/users/invite/${token}`);
 export const deleteUser = (userId) => API.delete(`/users/${userId}`);
-
+ 
  
 // NEW: Send password reset email for a specific user (by admin)
 export const sendPasswordResetEmailForUser = (userId) => API.post(`/auth/send-reset-email/${userId}`);
@@ -64,7 +64,6 @@ export const addLocation = (locationData) => API.post("/api/locations", location
 export const updateLocation = (locationId, locationData) =>
   API.put(`/api/locations/${locationId}`, locationData);
 export const deleteLocation = (locationId) => API.delete(`/api/locations/${locationId}`);
-
  
 // Newsfeed Posts
 export const createPost = (data) => API.post("/newsfeed/posts", data);
@@ -131,8 +130,22 @@ export const submitContactForm = (formData) => API.post("/api/contact", formData
 // Leave Application
 export const submitLeaveApplication = (leaveData) => API.post("/api/leave", leaveData);
 export const fetchMyLeaveApplications = () => API.get("/api/leave/my-applications"); // Added
-export const fetchAllLeaveApplications = () => API.get("/api/leave/all"); // Added
+export const fetchAllLeaveApplications = () => API.get("/api/leave"); // Added
 export const updateLeaveApplicationStatus = (id, status) => API.put(`/api/leave/${id}/status`, { status });
 export const fetchUserLeaves = (userId) => API.get(`/api/leave/user/${userId}`); // NEWLY ADDED
 
 export const fetchMyAssignedShifts = () => API.get("/api/schedules/my-assigned-shifts");
+
+
+// Company Profile API calls
+export const getCompanyProfile = () => API.get("/organization/profile");
+export const updateCompanyProfile = (updates) => API.put("/organization/profile", updates);
+
+
+
+export const getAdmins = () => API.get("/superadmin/admins");
+
+// @desc    Delete an admin user by ID
+// @route   DELETE /api/superadmin/admins/:id
+export const deleteAdmin = (id) => API.delete(`/superadmin/admins/${id}`);
+export const updateAdminStatus = (id, newStatus) => API.put(`/superadmin/admins/${id}/status`, { status: newStatus });

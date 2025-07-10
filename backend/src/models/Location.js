@@ -34,14 +34,12 @@ const locationSchema = new mongoose.Schema({
   notes: {
     type: String,
     default: ''
-  }
+  },
+  organization: { // NEW FIELD
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Organization',
+        required: true
+    },
 }, { timestamps: true });
 
-// >>> FIND THIS LINE OR SIMILAR IN YOUR LOCATION MODEL AND REMOVE OR COMMENT OUT unique: true <<<
-// Example of what you might have that creates the unique index:
-// If address is a subdocument with its own index:
-// locationSchema.index({ 'address.street': 1, 'address.city': 1, 'address.state': 1, 'address.postalCode': 1, 'address.country': 1 }, { unique: true });
-
-// If individual fields had unique: true, remove it from them:
-// street: { type: String, default: 'N/A', unique: true }, // <-- Remove unique: true if it's here
 module.exports = mongoose.models.Location || mongoose.model('Location', locationSchema);

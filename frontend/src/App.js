@@ -25,7 +25,8 @@ import Contactpage from './pages/Contactpage';
 import TermsandConditions from './pages/TermsandConditions';
 import Privacypolicy from './pages/Privacypolicy';
 import ResetPasswordPage from './pages/ResetPasswordPage';
-
+import BusinessProfile from "./pages/BusinessProfile";
+import SuperAdminPage from "./pages/SuperAdminPage";
 
 const ProtectedRoute = ({ children }) => {
   const { isLoggedIn, isLoading } = useAuth();
@@ -84,6 +85,8 @@ function App() {
             <Route path="openschedules" element={<OpenSchedulePage/>}/>
             <Route path="newsfeed" element={<NewsFeedPage />} />
             <Route path="reports" element={<ReportPage />} />
+            <Route path="businessprofile" element={<BusinessProfile/>}/>
+            <Route path="/superadmin" element={<SuperAdminPage/>}/>
           </Route>
           <Route path="*" element={<div>404 Not Found</div>} />
           <Route path='LandingPage' element></Route>
