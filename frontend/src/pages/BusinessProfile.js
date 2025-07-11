@@ -718,13 +718,6 @@ const SubscriptionSettings = () => {
                 >
                     {isCancelling ? 'Cancelling...' : 'Cancel Shiftry subscription'}
                 </button>
-                <button
-                    onClick={handleSave}
-                    className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg shadow-md transition duration-200"
-                    disabled={loading}
-                >
-                    Save Changes
-                </button>
             </div>
 
             {/* CONFIRMATION MODAL RENDERING: This is the crucial part that displays the modal */}
