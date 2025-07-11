@@ -20,18 +20,22 @@ const contactRoutes = require("../src/routes/contactRoutes");
 const leaveRoutes=require("../src/routes/leaveRoutes");
 const organizationRoutes =require("./routes/organizationRoutes");
 const superadminRoutes =require("./routes/superadminRoutes");
+const invoiceRoutes = require("./routes/invoiceRoutes");
 
 const app = express();
  
 // ✅ These must come BEFORE any routes
 app.use(cors());
-app.use(express.json()); // ✅ Moved to the top!
+app.use(express.json()); 
+app.use(express.urlencoded({ extended: true })); // ✅ Moved to the top!
 app.use(cookieParser());
 
  
-const projectRoot = path.join(__dirname, '..'); // Go up one level from 'backend' to the project root
+const projectRoot = path.join(__dirname, '..'); // Go up one level from 'src' to the project root
 const uploadsPath = path.join(projectRoot, 'uploads'); // Then append 'uploads'
- 
+console.log('Static files will be served from:', uploadsPath);
+app.use('/uploads', express.static(uploadsPath));
+
 console.log('Static files will be served from:', uploadsPath);
 app.use('/uploads', express.static(uploadsPath));
 app.use("/profile", profileRoutes);
@@ -48,6 +52,7 @@ app.use("/api/contact", contactRoutes);
 app.use("/api/leave", leaveRoutes);
 app.use("/organization",organizationRoutes);
 app.use("/superadmin",superadminRoutes);
+app.use("/invoices", invoiceRoutes);
 
 
 

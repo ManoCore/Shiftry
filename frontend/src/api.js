@@ -131,10 +131,11 @@ export const submitContactForm = (formData) => API.post("/api/contact", formData
 export const submitLeaveApplication = (leaveData) => API.post("/api/leave", leaveData);
 export const fetchMyLeaveApplications = () => API.get("/api/leave/my-applications"); // Added
 export const fetchAllLeaveApplications = () => API.get("/api/leave"); // Added
-export const updateLeaveApplicationStatus = (id, status) => API.put(`/api/leave/${id}/status`, { status });
+export const updateLeaveApplicationStatus = (id, status) => API.put(`/api/leave/${id}`, { status });
 export const fetchUserLeaves = (userId) => API.get(`/api/leave/user/${userId}`); // NEWLY ADDED
 
 export const fetchMyAssignedShifts = () => API.get("/api/schedules/my-assigned-shifts");
+
 
 
 // Company Profile API calls
@@ -149,3 +150,23 @@ export const getAdmins = () => API.get("/superadmin/admins");
 // @route   DELETE /api/superadmin/admins/:id
 export const deleteAdmin = (id) => API.delete(`/superadmin/admins/${id}`);
 export const updateAdminStatus = (id, newStatus) => API.put(`/superadmin/admins/${id}/status`, { status: newStatus });
+
+
+
+export const uploadInvoice = (adminId, formData) => API.post(`/invoices/upload/${adminId}`, formData, {
+    headers: {
+        'Content-Type': 'multipart/form-data' // Important for file uploads
+    }
+});
+
+// @desc    Get all invoices for a specific admin
+// @route   GET /api/v1/invoices/:adminId
+export const getInvoicesForAdmin = (adminId) => API.get(`/invoices/${adminId}`);
+
+// @desc    Download a specific invoice file
+// @route   GET /api/v1/invoices/download/:invoiceId
+// Note: This route will typically trigger a file download in the browser.
+// For frontend, you might just navigate to this URL directly or open in a new tab.
+export const downloadInvoice = (invoiceId) => API.get(`/invoices/download/${invoiceId}`, {
+    responseType: 'blob' // Important for handling binary file data
+});

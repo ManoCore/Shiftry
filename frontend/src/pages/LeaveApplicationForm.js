@@ -1,3 +1,7 @@
+
+
+
+
 // // src/components/LeaveApplicationForm.js
 // import React, { useState, useEffect } from 'react';
 // import { submitLeaveApplication, fetchMyLeaveApplications } from '../api'; // Import new API functions
@@ -33,8 +37,8 @@
 //       // Axios responses typically have the actual data in a 'data' property
 //       const applicationsData = response.data.data; // <-- CORRECTED: Access the 'data' property of the Axios response
 
-//       console.log('Fetched raw response from API:', response); // Log the full response for debugging
-//       console.log('Extracted applications data:', applicationsData); // Log the extracted data
+//       // console.log('Fetched raw response from API:', response); // Log the full response for debugging
+//       // console.log('Extracted applications data:', applicationsData); // Log the extracted data
 
 //       // IMPORTANT FIX: Ensure applicationsData is an array before setting state
 //       if (Array.isArray(applicationsData)) {
@@ -93,7 +97,7 @@
 //         leaveType,
 //         description,
 //       };
-//       console.log('Sending Leave Application:', leaveData);
+//       // console.log('Sending Leave Application:', leaveData);
 
 //       const response = await submitLeaveApplication(leaveData); // Call the API to submit leave
 //       setMessage(response.message || 'Leave application submitted successfully!');
@@ -337,8 +341,6 @@
 
 // export default LeaveApplicationForm;
 
-
-
 // src/components/LeaveApplicationForm.js
 import React, { useState, useEffect } from 'react';
 import { submitLeaveApplication, fetchMyLeaveApplications } from '../api'; // Import new API functions
@@ -374,8 +376,8 @@ const LeaveApplicationForm = () => {
       // Axios responses typically have the actual data in a 'data' property
       const applicationsData = response.data.data; // <-- CORRECTED: Access the 'data' property of the Axios response
 
-      // console.log('Fetched raw response from API:', response); // Log the full response for debugging
-      // console.log('Extracted applications data:', applicationsData); // Log the extracted data
+      console.log('Fetched raw response from API:', response); // Log the full response for debugging
+      console.log('Extracted applications data:', applicationsData); // Log the extracted data
 
       // IMPORTANT FIX: Ensure applicationsData is an array before setting state
       if (Array.isArray(applicationsData)) {
@@ -434,7 +436,7 @@ const LeaveApplicationForm = () => {
         leaveType,
         description,
       };
-      // console.log('Sending Leave Application:', leaveData);
+      console.log('Sending Leave Application:', leaveData);
 
       const response = await submitLeaveApplication(leaveData); // Call the API to submit leave
       setMessage(response.message || 'Leave application submitted successfully!');
@@ -598,10 +600,10 @@ const LeaveApplicationForm = () => {
                 <div className="flex justify-between items-center mb-2">
                   <span className="font-semibold text-gray-800">{app.leaveReason}</span>
                   <span className={`px-2 py-1 rounded-full text-xs font-medium
-                    ${app.status === 'Approved' ? 'bg-green-100 text-green-800' : ''}
+                    ${app.status === 'approved' ? 'bg-green-100 text-green-800' : ''}
                     ${app.status === 'Pending' ? 'bg-yellow-100 text-yellow-800' : ''}
-                    ${app.status === 'Rejected' ? 'bg-red-100 text-red-800' : ''}
-                    ${app.status === 'Cancelled' ? 'bg-gray-100 text-gray-800' : ''}
+                    ${app.status === 'rejected' ? 'bg-red-100 text-red-800' : ''}
+                    ${app.status === 'cancelled' ? 'bg-gray-100 text-gray-800' : ''}
                   `}>
                     {app.status}
                   </span>
@@ -677,3 +679,4 @@ const LeaveApplicationForm = () => {
 };
 
 export default LeaveApplicationForm;
+
