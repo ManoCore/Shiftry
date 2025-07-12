@@ -1104,9 +1104,6 @@ export default function AdminProfilePage() {
   );
 }
 
-
-
-
 // import React, { useState, useEffect, useRef } from 'react';
 // import { useNavigate } from 'react-router-dom';
 // import { updateUserProfile, fetchAllLeaveApplications, updateLeaveApplicationStatus } from '../api';
@@ -1415,7 +1412,10 @@ export default function AdminProfilePage() {
 //   const handleLeaveStatusUpdate = async (id, newStatus) => {
 //     setLeaveStatusMessage('');
 //     try {
-//       const response = await updateLeaveApplicationStatus(id, newStatus);
+//       const statusToSend=newStatus.toLowerCase();
+//       const response = await updateLeaveApplicationStatus(id, statusToSend);
+//        // Log for debugging
+//     console.log("PeoplePersonalPage: Leave status update successful, response:", response);
 //       setLeaveStatusMessage(response.message);
 //       getAllLeaveApplications();
 //     } catch (err) {
@@ -2079,13 +2079,13 @@ export default function AdminProfilePage() {
 //                                 {app.status === 'Pending' && (
 //                                   <div className="flex gap-2">
 //                                     <button
-//                                       onClick={() => handleLeaveStatusUpdate(app._id, 'Approved')}
+//                                       onClick={() => handleLeaveStatusUpdate(app._id, 'approved')}
 //                                       className="text-green-600 hover:text-green-900 px-2 py-1 rounded-md border border-green-600 hover:border-green-900 transition-colors duration-200 text-xs w-full"
 //                                     >
 //                                       Approve
 //                                     </button>
 //                                     <button
-//                                       onClick={() => handleLeaveStatusUpdate(app._id, 'Rejected')}
+//                                       onClick={() => handleLeaveStatusUpdate(app._id, 'rejected')}
 //                                       className="text-red-600 hover:text-red-900 px-2 py-1 rounded-md border border-red-600 hover:border-red-900 transition-colors duration-200 text-xs w-full"
 //                                     >
 //                                       Reject
@@ -2094,7 +2094,7 @@ export default function AdminProfilePage() {
 //                                 )}
 //                                 {(app.status === 'Approved' || app.status === 'Pending') && (
 //                                   <button
-//                                     onClick={() => handleLeaveStatusUpdate(app._id, 'Cancelled')}
+//                                     onClick={() => handleLeaveStatusUpdate(app._id, 'cancelled')}
 //                                     className="text-gray-600 hover:text-gray-900 px-2 py-1 rounded-md border border-gray-600 hover:border-gray-900 transition-colors duration-200 text-xs w-full"
 //                                   >
 //                                     Cancel
@@ -2172,13 +2172,13 @@ export default function AdminProfilePage() {
 //                                 {app.status === 'Pending' && (
 //                                   <div className="flex flex-col md:flex-row gap-2">
 //                                     <button
-//                                       onClick={() => handleLeaveStatusUpdate(app._id, 'Approved')}
+//                                       onClick={() => handleLeaveStatusUpdate(app._id, 'approved')}
 //                                       className="text-green-600 hover:text-green-900 px-2 py-1 md:px-3 md:py-1 rounded-md border border-green-600 hover:border-green-900 transition-colors duration-200 text-xs md:text-sm"
 //                                     >
 //                                       Approve
 //                                     </button>
 //                                     <button
-//                                       onClick={() => handleLeaveStatusUpdate(app._id, 'Rejected')}
+//                                       onClick={() => handleLeaveStatusUpdate(app._id, 'rejected')}
 //                                       className="text-red-600 hover:text-red-900 px-2 py-1 md:px-3 md:py-1 rounded-md border border-red-600 hover:border-red-900 transition-colors duration-200 text-xs md:text-sm"
 //                                     >
 //                                       Reject
@@ -2187,7 +2187,7 @@ export default function AdminProfilePage() {
 //                                 )}
 //                                 {(app.status === 'Approved' || app.status === 'Pending') && (
 //                                   <button
-//                                     onClick={() => handleLeaveStatusUpdate(app._id, 'Cancelled')}
+//                                     onClick={() => handleLeaveStatusUpdate(app._id, 'cancelled')}
 //                                     className="text-gray-600 hover:text-gray-900 px-2 py-1 md:px-3 md:py-1 rounded-md border border-gray-600 hover:border-gray-900 transition-colors duration-200 mt-2 md:mt-0 md:ml-2 text-xs md:text-sm"
 //                                   >
 //                                     Cancel
